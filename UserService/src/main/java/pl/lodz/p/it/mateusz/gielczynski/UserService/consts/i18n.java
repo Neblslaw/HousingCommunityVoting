@@ -1,0 +1,11 @@
+package pl.lodz.p.it.mateusz.gielczynski.UserService.consts;
+
+public class i18n {
+    public static final String ACCOUNT_NOT_FOUND = "404.account";
+
+
+    public static final String INVALID_RESET_CODE = "400.reset_code";
+    public static final String INVALID_INVITE_CODE = "400.invite_code";
+    public static final String EMAIL_IN_USE = "400.email_in_use";
+    public static final String LOGIN_IN_USE = "400.login_in_use";
+}
