@@ -1,7 +1,7 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -33,18 +33,18 @@ public class AccountController {
         return AccountMapper.toDetailedDto(accountService.getAccount(id));
     }
 
-    @PostMapping()
-    public void updateAccount(AccountCreateDto accountCreateDto, @AuthenticationPrincipal String login) {
-        accountService.updateAccount(login, accountCreateDto);
-    }
+//    @PostMapping()
+//    public void updateAccount(AccountCreateDto accountCreateDto, @AuthenticationPrincipal String login) {
+//        accountService.updateAccount(login, accountCreateDto);
+//    }
 
     @PostMapping("/password/reset")
-    public void changePassword(AccountPasswordChangeDto accountPasswordChangeDto) throws BadRequestException {
+    public void changePassword(@RequestBody AccountPasswordChangeDto accountPasswordChangeDto) throws BadRequestException {
         accountService.changePassword(accountPasswordChangeDto.resetCode(), accountPasswordChangeDto.newPassword());
     }
 
     @PostMapping("/password/reset/request")
-    public void changePassword(AccountPasswordResetRequestDto accountPasswordResetRequestDto) {
+    public void changePassword(@RequestBody AccountPasswordResetRequestDto accountPasswordResetRequestDto) {
         accountService.requestPasswordChange(accountPasswordResetRequestDto.email());
     }
 

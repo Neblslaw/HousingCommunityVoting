@@ -11,7 +11,9 @@ public interface InviteCodeRepository extends Repository<InviteCode, UUID> {
 
     void saveAndFlush(InviteCode inviteCode);
 
-    InviteCode getByCode(String code);
+    boolean existsByIdAndExpiresAtAfter(UUID attr0, LocalDateTime expiresAtAfter);
 
-    Optional<Object> existsByIdAndExpiresAtAfter(UUID attr0, LocalDateTime expiresAtAfter);
+
+    //todo fix pls
+    void deleteAll();
 }

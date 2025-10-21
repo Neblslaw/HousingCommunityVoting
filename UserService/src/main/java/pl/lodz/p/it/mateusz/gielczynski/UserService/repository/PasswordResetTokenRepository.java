@@ -11,9 +11,12 @@ import java.util.UUID;
 public interface PasswordResetTokenRepository extends Repository<PasswordResetToken, UUID> {
     void saveAndFlush(PasswordResetToken passwordResetToken);
 
-    Optional<PasswordResetToken> getById(UUID code);
+    Optional<PasswordResetToken> findById(UUID code);
 
     void deletePasswordResetTokenById(UUID code);
 
-    Optional<PasswordResetToken> getByIdAndExpiresAtAfter(UUID code, LocalDateTime now);
+    Optional<PasswordResetToken> findByIdAndExpiresAtAfter(UUID code, LocalDateTime now);
+
+    //todo fix pls
+    void deleteAll();
 }

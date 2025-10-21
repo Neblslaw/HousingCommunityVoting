@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.Exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.Exceptions.NotFoundException;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.consts.i18n;
@@ -32,15 +33,15 @@ public class AccountService {
     private final GroupRepository groupRepository;
 
     public List<Account> getAccounts() {
-        return accountRepository.getAccounts();
+        return accountRepository.findAll();
     }
 
     public Account getAccount(UUID id) throws  NotFoundException {
-        return accountRepository.getAccountById(id).orElseThrow(() -> new NotFoundException(i18n.ACCOUNT_NOT_FOUND));
+        return accountRepository.findAccountById(id).orElseThrow(() -> new NotFoundException(i18n.ACCOUNT_NOT_FOUND));
     }
 
     public void updateAccount(String login, AccountCreateDto accountCreateDto) {
-        Account account = accountRepository.getAccountByLogin(login);
+        Account account = accountRepository.findAccountByLogin(login);
         account.setEmail(accountCreateDto.email());
         account.setFirstName(accountCreateDto.firstName());
         account.setLastName(accountCreateDto.lastName());
@@ -48,7 +49,7 @@ public class AccountService {
     }
 
     public void requestPasswordChange(String email) {
-        Optional<Account> account = accountRepository.getAccountByEmail(email);
+        Optional<Account> account = accountRepository.findAccountByEmail(email);
         if(account.isPresent() && !account.get().isArchived()) {
             passwordResetTokenRepository.saveAndFlush(new PasswordResetToken(account.get()));
             emailService.sendPasswordResetEmail(email);
@@ -56,13 +57,14 @@ public class AccountService {
     }
 
     public void archiveAccount(UUID id) throws NotFoundException {
-        Account account = accountRepository.getAccountById(id).orElseThrow(() -> new NotFoundException(i18n.ACCOUNT_NOT_FOUND));;
+        Account account = accountRepository.findAccountById(id).orElseThrow(() -> new NotFoundException(i18n.ACCOUNT_NOT_FOUND));
         account.setArchived(true);
         accountRepository.saveAndFlush(account);
     }
 
+    @Transactional
     public void changePassword(UUID code, String newPassword) throws BadRequestException {
-        PasswordResetToken token = passwordResetTokenRepository.getByIdAndExpiresAtAfter(code, LocalDateTime.now()).orElseThrow(() -> new BadRequestException(i18n.INVALID_RESET_CODE));
+        PasswordResetToken token = passwordResetTokenRepository.findByIdAndExpiresAtAfter(code, LocalDateTime.now()).orElseThrow(() -> new BadRequestException(i18n.INVALID_RESET_CODE));
         Account account = token.getAccount();
         account.setPasswordHash(newPassword); //todo hash
         accountRepository.saveAndFlush(account);
@@ -75,8 +77,10 @@ public class AccountService {
         return inviteCode;
     }
 
-    public void createAccount(AccountCreateDto accountCreateDto, UUID inviteCode) throws BadRequestException {
-        inviteCodeRepository.existsByIdAndExpiresAtAfter(inviteCode, LocalDateTime.now()).orElseThrow(() -> new BadRequestException(i18n.INVALID_INVITE_CODE));
+    public void createAccount(AccountCreateDto accountCreateDto, UUID inviteCode, String language) throws BadRequestException {
+        if(!inviteCodeRepository.existsByIdAndExpiresAtAfter(inviteCode, LocalDateTime.now())){
+            throw new BadRequestException(i18n.INVALID_INVITE_CODE);
+        }
 
         if(accountRepository.existsAccountByEmail(accountCreateDto.email())){
             throw new BadRequestException(i18n.EMAIL_IN_USE);
@@ -91,6 +95,7 @@ public class AccountService {
         account.setFirstName(accountCreateDto.firstName());
         account.setLastName(accountCreateDto.lastName());
         account.setPasswordHash(accountCreateDto.password()); //todo hash
+        account.setLanguage(language);
 
         Group group = new Group(account.getLogin());
         account.getGroups().add(group);

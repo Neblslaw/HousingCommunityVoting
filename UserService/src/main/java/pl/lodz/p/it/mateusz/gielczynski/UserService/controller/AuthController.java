@@ -1,6 +1,7 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpHeaders;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ public class AuthController {
     }
 
     @PostMapping("/register/{inviteCode}")
-    public void Register(AccountCreateDto accountCreateDto, @PathVariable UUID inviteCode) throws BadRequestException {
-        accountService.createAccount(accountCreateDto, inviteCode);
+    public void Register(@RequestBody AccountCreateDto accountCreateDto, @PathVariable UUID inviteCode, @RequestHeader(HttpHeaders.ACCEPT_LANGUAGE) String language) throws BadRequestException {
+        accountService.createAccount(accountCreateDto, inviteCode, language);
     }
 
     @GetMapping("/inviteCode")

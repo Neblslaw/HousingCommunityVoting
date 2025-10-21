@@ -27,5 +27,6 @@ public class PasswordResetToken {
 
     public PasswordResetToken(Account account) {
         this.expiresAt = LocalDateTime.now().plusDays(1);
+        this.account = account;
     }
 }
