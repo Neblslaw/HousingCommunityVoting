@@ -1,0 +1,4 @@
+pl/lodz/p/it/mateusz/gielczynski/exceptions/NotFoundException.class
+pl/lodz/p/it/mateusz/gielczynski/exceptions/ApplicationExceptionHandler.class
+pl/lodz/p/it/mateusz/gielczynski/exceptions/BadRequestException.class
+pl/lodz/p/it/mateusz/gielczynski/exceptions/ApplicationException.class
