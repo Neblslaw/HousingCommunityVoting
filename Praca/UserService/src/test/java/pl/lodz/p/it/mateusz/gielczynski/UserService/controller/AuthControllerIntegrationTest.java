@@ -23,7 +23,8 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 class AuthControllerIntegrationTest extends BaseIntegrationTest {
@@ -61,8 +62,8 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         org.hamcrest.Matchers.matchesPattern(
-                        "^\"[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\"$"
-                )));
+                                "^\"[0-9a-fA-F]{8}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{4}\\b-[0-9a-fA-F]{12}\"$"
+                        )));
     }
 
     @Test
@@ -88,7 +89,7 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
 
         // Then
         assertThat(accountRepository.existsAccountByLogin("newuser")).isTrue();
-        Account account = accountRepository.findAccountByLogin("newuser");
+        Account account = accountRepository.findAccountByLogin("newuser").get();
         assertThat(account.getEmail()).isEqualTo("newuser@test.com");
         assertThat(account.getFirstName()).isEqualTo("John");
         assertThat(account.getLastName()).isEqualTo("Doe");

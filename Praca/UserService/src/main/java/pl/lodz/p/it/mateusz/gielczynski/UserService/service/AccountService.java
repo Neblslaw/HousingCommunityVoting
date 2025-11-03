@@ -3,8 +3,6 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
-import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.consts.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.email.EmailService;
@@ -16,6 +14,10 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.AccountRepository
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.GroupRepository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.InviteCodeRepository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.PasswordResetTokenRepository;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.InternalServerErrorException;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
+import pl.lodz.p.it.mateusz.gielczynski.security.jwt.TokenProvider;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -31,17 +33,18 @@ public class AccountService {
     private final EmailService emailService;
     private final InviteCodeRepository inviteCodeRepository;
     private final GroupRepository groupRepository;
+    private final TokenProvider tokenProvider;
 
     public List<Account> getAccounts() {
         return accountRepository.findAll();
     }
 
-    public Account getAccount(UUID id) throws  NotFoundException {
+    public Account getAccount(UUID id) throws NotFoundException {
         return accountRepository.findAccountById(id).orElseThrow(() -> new NotFoundException(i18n.ACCOUNT_NOT_FOUND));
     }
 
-    public void updateAccount(String login, AccountCreateDto accountCreateDto) {
-        Account account = accountRepository.findAccountByLogin(login);
+    public void updateAccount(String login, AccountCreateDto accountCreateDto) throws InternalServerErrorException {
+        Account account = accountRepository.findAccountByLogin(login).orElseThrow(() -> new InternalServerErrorException(""));
         account.setEmail(accountCreateDto.email());
         account.setFirstName(accountCreateDto.firstName());
         account.setLastName(accountCreateDto.lastName());
@@ -50,7 +53,7 @@ public class AccountService {
 
     public void requestPasswordChange(String email) {
         Optional<Account> account = accountRepository.findAccountByEmail(email);
-        if(account.isPresent() && !account.get().isArchived()) {
+        if (account.isPresent() && !account.get().isArchived()) {
             passwordResetTokenRepository.saveAndFlush(new PasswordResetToken(account.get()));
             emailService.sendPasswordResetEmail(email);
         }
@@ -78,14 +81,14 @@ public class AccountService {
     }
 
     public void createAccount(AccountCreateDto accountCreateDto, UUID inviteCode, String language) throws BadRequestException {
-        if(!inviteCodeRepository.existsByIdAndExpiresAtAfter(inviteCode, LocalDateTime.now())){
+        if (!inviteCodeRepository.existsByIdAndExpiresAtAfter(inviteCode, LocalDateTime.now())) {
             throw new BadRequestException(i18n.INVALID_INVITE_CODE);
         }
 
-        if(accountRepository.existsAccountByEmail(accountCreateDto.email())){
+        if (accountRepository.existsAccountByEmail(accountCreateDto.email())) {
             throw new BadRequestException(i18n.EMAIL_IN_USE);
         }
-        if(accountRepository.existsAccountByLogin(accountCreateDto.login())){
+        if (accountRepository.existsAccountByLogin(accountCreateDto.login())) {
             throw new BadRequestException(i18n.LOGIN_IN_USE);
         }
 
@@ -103,5 +106,13 @@ public class AccountService {
 
         accountRepository.saveAndFlush(account);    //todo check validation
         groupRepository.saveAndFlush(group);
+    }
+
+    public String login(String login, String password) throws BadRequestException {
+        Account account = accountRepository.findAccountByLogin(login).orElseThrow(() -> new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH));
+        if (account.getPasswordHash().equals(password)) {   //todo fix password check
+            return tokenProvider.generateToken(account.getLogin(), account.getRoles()); //todo add email
+        }
+        throw new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH);
     }
 }

@@ -22,6 +22,7 @@
     <modules>
         <module>Exceptions</module>
         <module>UserService</module>
+        <module>SecurityClient</module>
     </modules>
     <scm>
 		<connection/>

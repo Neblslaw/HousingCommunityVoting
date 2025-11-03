@@ -6,10 +6,8 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.BaseIntegrationTest;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountPasswordChangeDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountPasswordResetRequestDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
@@ -74,7 +72,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         Account account = new Account("testuser", "hash", "test@test.com", "John", "Doe", "en");
         accountRepository.saveAndFlush(account);
-        Account saved = accountRepository.findAccountByLogin("testuser");
+        Account saved = accountRepository.findAccountByLogin("testuser").get();
 
         // When & Then
         mockMvc.perform(get("/accounts/" + saved.getId()))
@@ -164,7 +162,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         Account account = new Account("testuser", "oldHash", "test@test.com", "John", "Doe", "en");
         accountRepository.saveAndFlush(account);
-        Account saved = accountRepository.findAccountByLogin("testuser");
+        Account saved = accountRepository.findAccountByLogin("testuser").get();
 
         PasswordResetToken token = new PasswordResetToken(saved);
         passwordResetTokenRepository.saveAndFlush(token);
@@ -203,7 +201,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
         // Given
         Account account = new Account("testuser", "hash", "test@test.com", "John", "Doe", "en");
         accountRepository.saveAndFlush(account);
-        Account saved = accountRepository.findAccountByLogin("testuser");
+        Account saved = accountRepository.findAccountByLogin("testuser").get();
 
         // When
         mockMvc.perform(post("/accounts/" + saved.getId() + "/archive"))

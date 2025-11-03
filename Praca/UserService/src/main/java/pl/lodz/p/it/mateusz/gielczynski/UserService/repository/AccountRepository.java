@@ -1,6 +1,5 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.repository;
 
-import org.springframework.context.annotation.Conditional;
 import org.springframework.data.repository.Repository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 
@@ -16,7 +15,7 @@ public interface AccountRepository extends Repository<Account, UUID> {
 
     void saveAndFlush(Account account);
 
-    Account findAccountByLogin(String login);
+    Optional<Account> findAccountByLogin(String login);
 
     boolean existsAccountByEmailAndArchived(String email, boolean b);
 

@@ -8,4 +8,5 @@ public class i18n {
     public static final String INVALID_INVITE_CODE = "400.invite_code";
     public static final String EMAIL_IN_USE = "400.email_in_use";
     public static final String LOGIN_IN_USE = "400.login_in_use";
+    public static final String CREDENTIALS_DO_NOT_MATCH = "400.credentials_do_not_match";
 }

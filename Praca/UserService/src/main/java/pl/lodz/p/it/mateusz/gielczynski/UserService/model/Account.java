@@ -6,8 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 
@@ -18,7 +18,7 @@ import java.util.Set;
 //                @Index(name = DatabaseIndexConsts.ACCOUNT_CREATED_BY_INDEX, columnList = DatabaseConsts.ABSTRACT_ENTITY_CREATED_BY),
 //                @Index(name = DatabaseIndexConsts.ACCOUNT_MODIFIED_BY_INDEX, columnList = DatabaseConsts.ABSTRACT_ENTITY_MODIFIED_BY)
 //        }
-        )
+)
 @Getter
 @Setter
 @NoArgsConstructor
@@ -60,5 +60,9 @@ public class Account extends AbstractEntity {
         this.firstName = firstName;
         this.lastName = lastName;
         this.language = language;
+    }
+
+    public List<String> getRoles() {
+        return groups.stream().flatMap(group -> group.getRoles().stream()).map(Role::getName).toList();
     }
 }
