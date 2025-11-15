@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.consts.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.email.EmailService;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.jwt.TokenProvider;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.InviteCode;
@@ -17,7 +18,6 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.PasswordResetToke
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.InternalServerErrorException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
-import pl.lodz.p.it.mateusz.gielczynski.security.jwt.TokenProvider;
 
 import java.time.LocalDateTime;
 import java.util.List;

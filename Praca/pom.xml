@@ -23,6 +23,7 @@
         <module>Exceptions</module>
         <module>UserService</module>
         <module>SecurityClient</module>
+        <module>Loggers</module>
     </modules>
     <scm>
         <connection/>

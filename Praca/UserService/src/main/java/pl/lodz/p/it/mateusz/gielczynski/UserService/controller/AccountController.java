@@ -1,16 +1,18 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import lombok.RequiredArgsConstructor;
-//import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
-
-import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.*;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountDetailsDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountPasswordChangeDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountPasswordResetRequestDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.mapper.AccountMapper;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.service.AccountService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
+import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
 
 import java.util.Set;
 import java.util.UUID;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 @RequestMapping("/accounts")
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.NEVER)
+@MethodCallLogged
 public class AccountController {
 
     private final AccountService accountService;

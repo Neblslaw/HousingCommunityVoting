@@ -6,6 +6,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleDto;
+import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @RequestMapping("/roles")
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.NEVER)
-//@MethodCallLogged
+@MethodCallLogged
 class RoleController {
 
 

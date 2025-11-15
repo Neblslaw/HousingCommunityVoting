@@ -1,4 +1,4 @@
-package pl.lodz.p.it.mateusz.gielczynski.security.jwt;
+package pl.lodz.p.it.mateusz.gielczynski.UserService.jwt;
 
 import io.jsonwebtoken.Jwts;
 import lombok.RequiredArgsConstructor;
