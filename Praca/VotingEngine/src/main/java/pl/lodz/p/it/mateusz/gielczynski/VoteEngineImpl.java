@@ -23,12 +23,8 @@ public class VoteEngineImpl implements VotingEngine {
                             float share = (float) (Math.floor(100.0 / options.size()) / 100.0);
                             return options.stream().map(option -> Map.entry(option, share));
                         })
-                        .collect(Collectors.toMap(
-                                Map.Entry::getKey,
-                                Map.Entry::getValue,
-                                Float::sum))
-                        .entrySet().stream()
-                        .map(entry -> new OptionResult(entry.getKey(), entry.getValue()))
+                        .collect(Collectors.groupingBy(Map.Entry::getKey, Collectors.summingDouble(Map.Entry::getValue)))
+                        .entrySet().stream().map(entry -> new OptionResult(entry.getKey(), entry.getValue().floatValue()))
                         .collect(Collectors.toSet())
         );
     }
