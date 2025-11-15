@@ -19,7 +19,6 @@ import org.springframework.stereotype.Component;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
 
-//todo conditional on property
 @Component
 @RequiredArgsConstructor
 @EnableMethodSecurity
