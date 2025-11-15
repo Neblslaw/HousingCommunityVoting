@@ -1,0 +1,30 @@
+version: '3.9'
+
+services:
+  postgres:
+    image: postgres:18-alpine
+    ports:
+      - "5432:5432"
+
+    #todo fix
+    environment:
+      - POSTGRES_DB=appdb
+      - POSTGRES_PASSWORD=1qaz2wsx
+      - POSTGRES_USER=root
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+  #todo real mail
+  mail:
+    image: maildev/maildev
+    ports:
+      - "1080:1080"
+      - "1025:1025"
+
+    environment:
+      - password=admin
+      - username=admin
+
+
+volumes:
+  db_data:
