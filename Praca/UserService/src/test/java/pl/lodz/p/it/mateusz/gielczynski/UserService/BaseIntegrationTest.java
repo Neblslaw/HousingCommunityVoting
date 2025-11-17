@@ -5,9 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.server.LocalServerPort;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.PostgreSQLContainer;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.AccountRepository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.GroupRepository;
@@ -19,14 +18,10 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.PasswordResetToke
 @ActiveProfiles("test")
 public abstract class BaseIntegrationTest {
 
-    private static final PostgreSQLContainer<?> postgres;
+    @ServiceConnection
+    private static final PostgreSQLContainer<?> postgres = new PostgreSQLContainer<>("postgres:16-alpine");
 
     static {
-        postgres = new PostgreSQLContainer<>("postgres:16-alpine")
-                .withDatabaseName("testdb")
-                .withUsername("testuser")
-                .withPassword("testpass")
-                .withReuse(true);
         postgres.start();
     }
 
@@ -40,13 +35,6 @@ public abstract class BaseIntegrationTest {
     GroupRepository groupRepository;
     @Autowired
     InviteCodeRepository inviteCodeRepository;
-
-    @DynamicPropertySource
-    static void configureProperties(DynamicPropertyRegistry registry) {
-        registry.add("spring.datasource.url", postgres::getJdbcUrl);
-        registry.add("spring.datasource.username", postgres::getUsername);
-        registry.add("spring.datasource.password", postgres::getPassword);
-    }
 
     @BeforeEach
     void setUp() {
