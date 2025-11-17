@@ -1,7 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -10,7 +9,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.BaseIntegrationTest;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleCreateDto;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.GroupRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -24,14 +22,6 @@ class RoleControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private ObjectMapper objectMapper;
-
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @BeforeEach
-    void setUp() {
-        groupRepository.deleteAll();
-    }
 
     @Test
     @WithMockUser(roles = {"admin"})

@@ -2,9 +2,11 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.repository;
 
 import org.springframework.data.repository.Repository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 public interface AccountRepository extends Repository<Account, UUID> {
@@ -13,7 +15,7 @@ public interface AccountRepository extends Repository<Account, UUID> {
 
     Optional<Account> findAccountById(UUID id);
 
-    void saveAndFlush(Account account);
+    Account saveAndFlush(Account account);
 
     Optional<Account> findAccountByLogin(String login);
 
@@ -27,4 +29,6 @@ public interface AccountRepository extends Repository<Account, UUID> {
 
     //todo fix pls
     void deleteAll();
+
+    List<Account> findAllByGroups(Set<Group> groups);
 }

@@ -5,6 +5,12 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupCreateDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.service.GroupService;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
+
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/groups")
@@ -12,8 +18,15 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupCreateDto;
 @Transactional(propagation = Propagation.NEVER)
 class GroupController {
 
+    private final GroupService groupService;
+
     @GetMapping
     public void getGroups() {
+
+    }
+
+    @GetMapping("{id}/members")
+    public void getGroupMembers(UUID id) {
 
     }
 
@@ -32,13 +45,13 @@ class GroupController {
 
     }
 
-    @PostMapping("/{groupId}/users/{userId}")
-    public void addUserToGroup(@PathVariable String groupId, @PathVariable String userId) {
-
+    @PostMapping("/{groupId}/users")
+    public void addUsersToGroup(@PathVariable UUID groupId, @RequestBody List<UUID> usersToAdd) throws NotFoundException, BadRequestException {
+        groupService.addUsersToGroup(groupId, usersToAdd);
     }
 
     @DeleteMapping("/{groupId}/users/{userId}")
-    public void removeUserFromGroup(@PathVariable String groupId, @PathVariable String userId){
+    public void removeUserFromGroup(@PathVariable String groupId, @PathVariable String userId) {
 
     }
 
@@ -51,8 +64,6 @@ class GroupController {
     public void removeRoleFromGroup(@PathVariable String groupId, @PathVariable String roleName) {
 
     }
-
-
 
 
 }
