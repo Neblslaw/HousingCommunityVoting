@@ -6,13 +6,15 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.BaseIntegrationTest;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.GroupRepository;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
 class RoleControllerIntegrationTest extends BaseIntegrationTest {
@@ -32,6 +34,7 @@ class RoleControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldGetAllRoles() throws Exception {
         // When & Then
         mockMvc.perform(get("/roles"))
@@ -40,6 +43,7 @@ class RoleControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldCreateRole() throws Exception {
         // Given
         RoleCreateDto roleDto = new RoleCreateDto("ADMIN");
@@ -52,6 +56,7 @@ class RoleControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldDeleteRole() throws Exception {
         // Given
         String roleName = "ADMIN";

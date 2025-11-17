@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.BaseIntegrationTest;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupCreateDto;
@@ -38,6 +39,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldGetAllGroups() throws Exception {
         // When & Then
         mockMvc.perform(get("/groups"))
@@ -45,6 +47,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldGetGroupById() throws Exception {
         // Given
         String groupId = "test-group-id";
@@ -55,6 +58,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldCreateGroup() throws Exception {
         // Given
         GroupCreateDto groupDto = new GroupCreateDto("Test Group", Set.of("ADMIN", "USER"));
@@ -67,6 +71,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldDeleteGroup() throws Exception {
         // Given
         String groupId = "test-group-id";
@@ -77,6 +82,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldAddUserToGroup() throws Exception {
         // Given
         String groupId = "test-group-id";
@@ -88,6 +94,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldRemoveUserFromGroup() throws Exception {
         // Given
         String groupId = "test-group-id";
@@ -99,6 +106,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldAddRoleToGroup() throws Exception {
         // Given
         String groupId = "test-group-id";
@@ -110,6 +118,7 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldRemoveRoleFromGroup() throws Exception {
         // Given
         String groupId = "test-group-id";

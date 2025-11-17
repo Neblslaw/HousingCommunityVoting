@@ -27,10 +27,9 @@ public class TempAccountGenerator {
         account.setLastName("Mateusz");
         account.setEmail("cos@cos.pl");
         Group zbychGroup = new Group("zbych");
-        zbychGroup.getRoles().add(new Role("Zbych"));
+        zbychGroup.getRoles().add(new Role("Zbych", 1));
         account.getGroups().add(zbychGroup);
         accountRepository.saveAndFlush(account);
-        zbychGroup.getAccounts().add(account);
         groupRepository.saveAndFlush(zbychGroup);
     }
 

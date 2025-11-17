@@ -19,7 +19,7 @@ public class PasswordResetToken {
     @Column(updatable = false)
     private UUID id;
 
-    @Column()
+    @Column(nullable = false, updatable = false)
     private LocalDateTime expiresAt;
 
     @OneToOne

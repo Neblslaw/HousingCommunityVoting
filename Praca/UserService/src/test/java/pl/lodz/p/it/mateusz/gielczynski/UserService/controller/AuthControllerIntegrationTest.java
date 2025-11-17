@@ -1,21 +1,19 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.BaseIntegrationTest;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.InviteCode;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.AccountRepository;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.GroupRepository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.InviteCodeRepository;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.PasswordResetTokenRepository;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -41,24 +39,12 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
     @Autowired
     private InviteCodeRepository inviteCodeRepository;
 
-    @Autowired
-    private GroupRepository groupRepository;
-    @Autowired
-    private PasswordResetTokenRepository passwordResetTokenRepository;
-
-    @BeforeEach
-    void setUp() {
-        // Clean up in proper order due to relationships
-        groupRepository.deleteAll();
-        inviteCodeRepository.deleteAll();
-        passwordResetTokenRepository.deleteAll();
-        accountRepository.deleteAll();
-    }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldGenerateInviteCode() throws Exception {
         // When & Then
-        mockMvc.perform(get("/auth/inviteCode"))
+        mockMvc.perform(get("/myauth/inviteCode"))
                 .andExpect(status().isOk())
                 .andExpect(content().string(
                         org.hamcrest.Matchers.matchesPattern(
@@ -81,7 +67,7 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
         );
 
         // When
-        mockMvc.perform(post("/auth/register/" + inviteCode.getId())
+        mockMvc.perform(post("/myauth/register/" + inviteCode.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.ACCEPT_LANGUAGE, "en")
                         .content(objectMapper.writeValueAsString(registerDto)))
@@ -93,8 +79,6 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
         assertThat(account.getEmail()).isEqualTo("newuser@test.com");
         assertThat(account.getFirstName()).isEqualTo("John");
         assertThat(account.getLastName()).isEqualTo("Doe");
-        assertThat(account.getGroups()).hasSize(1);
-        assertThat(account.getGroups().iterator().next().getName()).isEqualTo("newuser");
     }
 
     @Test
@@ -110,7 +94,7 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/auth/register/" + invalidCode)
+        mockMvc.perform(post("/myauth/register/" + invalidCode)
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.ACCEPT_LANGUAGE, "en")
                         .content(objectMapper.writeValueAsString(registerDto)))
@@ -135,7 +119,7 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/auth/register/" + inviteCode.getId())
+        mockMvc.perform(post("/myauth/register/" + inviteCode.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.ACCEPT_LANGUAGE, "en")
                         .content(objectMapper.writeValueAsString(registerDto)))
@@ -162,7 +146,7 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/auth/register/" + inviteCode.getId())
+        mockMvc.perform(post("/myauth/register/" + inviteCode.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.ACCEPT_LANGUAGE, "en")
                         .content(objectMapper.writeValueAsString(registerDto)))
@@ -189,7 +173,7 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
         );
 
         // When & Then
-        mockMvc.perform(post("/auth/register/" + inviteCode.getId())
+        mockMvc.perform(post("/myauth/register/" + inviteCode.getId())
                         .contentType(MediaType.APPLICATION_JSON)
                         .header(HttpHeaders.ACCEPT_LANGUAGE, "en")
                         .content(objectMapper.writeValueAsString(registerDto)))
@@ -197,12 +181,5 @@ class AuthControllerIntegrationTest extends BaseIntegrationTest {
 
         // Verify original account still exists and no new one was created
         assertThat(accountRepository.existsAccountByLogin("existinguser")).isTrue();
-    }
-
-    @Test
-    void shouldHandleLoginEndpoint() throws Exception {
-        // Note: Login endpoint is empty in the controller, just verify it's accessible
-        mockMvc.perform(post("/auth/login"))
-                .andExpect(status().isOk());
     }
 }

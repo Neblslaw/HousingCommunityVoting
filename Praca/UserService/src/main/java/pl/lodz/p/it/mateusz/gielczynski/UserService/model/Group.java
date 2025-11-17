@@ -15,17 +15,19 @@ import java.util.Set;
 @AllArgsConstructor
 @Entity
 @Table(name = "user_group")
-public class Group extends AbstractEntity{
+public class Group extends AbstractEntity {
 
+    @Column(nullable = false, unique = true, updatable = false)
     private String name;
 
     @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     private Set<Role> roles = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    private Set<Account> accounts = new HashSet<>();
+    @Column(nullable = false)
+    private int userCount;
 
     public Group(String name) {
         this.name = name;
+        this.userCount = 0;
     }
 }

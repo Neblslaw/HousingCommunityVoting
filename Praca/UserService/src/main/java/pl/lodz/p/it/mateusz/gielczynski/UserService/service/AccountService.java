@@ -102,7 +102,6 @@ public class AccountService {
 
         Group group = new Group(account.getLogin());
         account.getGroups().add(group);
-        group.getAccounts().add(account);
 
         accountRepository.saveAndFlush(account);    //todo check validation
         groupRepository.saveAndFlush(group);

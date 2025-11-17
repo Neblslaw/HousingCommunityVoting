@@ -49,7 +49,7 @@ public class Account extends AbstractEntity {
     @Column(nullable = false, columnDefinition = "boolean default false")
     private boolean verified = false;
 
-    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private Set<Group> groups = new HashSet<>();
 
 

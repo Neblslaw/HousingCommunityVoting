@@ -1,11 +1,11 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.BaseIntegrationTest;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountPasswordChangeDto;
@@ -13,8 +13,6 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountPasswordResetRequ
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.PasswordResetToken;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.AccountRepository;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.GroupRepository;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.InviteCodeRepository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.PasswordResetTokenRepository;
 
 import java.util.UUID;
@@ -38,22 +36,10 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     private AccountRepository accountRepository;
 
     @Autowired
-    private InviteCodeRepository inviteCodeRepository;
-
-    @Autowired
     private PasswordResetTokenRepository passwordResetTokenRepository;
 
-    @Autowired
-    private GroupRepository groupRepository;
-
-    @BeforeEach
-    void setUp() {
-        // Clean up in proper order due to relationships
-        groupRepository.deleteAll();
-        accountRepository.deleteAll();
-    }
-
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldGetAllAccounts() throws Exception {
         // Given
         Account account1 = new Account("user1", "hash1", "user1@test.com", "John", "Doe", "en");
@@ -68,6 +54,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldGetAccountById() throws Exception {
         // Given
         Account account = new Account("testuser", "hash", "test@test.com", "John", "Doe", "en");
@@ -84,6 +71,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldReturn404WhenAccountNotFound() throws Exception {
         // Given
         UUID nonExistentId = UUID.randomUUID();
@@ -122,6 +110,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
 //    }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldRequestPasswordReset() throws Exception {
         // Given
         Account account = new Account("testuser", "hash", "test@test.com", "John", "Doe", "en");
@@ -140,6 +129,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldNotCreatePasswordResetTokenForArchivedAccount() throws Exception {
         // Given
         Account account = new Account("testuser", "hash", "test@test.com", "John", "Doe", "en");
@@ -158,6 +148,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldChangePasswordWithValidResetCode() throws Exception {
         // Given
         Account account = new Account("testuser", "oldHash", "test@test.com", "John", "Doe", "en");
@@ -184,6 +175,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldReturn400WhenResetCodeIsInvalid() throws Exception {
         // Given
         UUID invalidCode = UUID.randomUUID();
@@ -197,6 +189,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldArchiveAccount() throws Exception {
         // Given
         Account account = new Account("testuser", "hash", "test@test.com", "John", "Doe", "en");
@@ -213,6 +206,7 @@ class AccountControllerIntegrationTest extends BaseIntegrationTest {
     }
 
     @Test
+    @WithMockUser(roles = {"admin"})
     void shouldReturn404WhenArchivingNonExistentAccount() throws Exception {
         // Given
         UUID nonExistentId = UUID.randomUUID();

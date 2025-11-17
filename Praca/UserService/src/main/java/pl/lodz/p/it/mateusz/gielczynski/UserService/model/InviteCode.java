@@ -1,8 +1,10 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.model;
 
 import jakarta.persistence.*;
-import lombok.*;
-import org.springframework.data.annotation.LastModifiedDate;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
@@ -19,7 +21,7 @@ public class InviteCode {
     @Column(updatable = false)
     private UUID id;
 
-    @Column()
+    @Column(nullable = false, updatable = false)
     private LocalDateTime expiresAt;
 
     public InviteCode() {

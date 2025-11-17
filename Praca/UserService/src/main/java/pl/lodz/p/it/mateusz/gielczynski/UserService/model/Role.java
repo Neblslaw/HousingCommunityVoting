@@ -1,7 +1,7 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.model;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,7 +12,10 @@ import lombok.Setter;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Role {
-    @Id
+public class Role extends AbstractEntity {
+
+    @Column(nullable = false, unique = true, updatable = false)
     private String name;
+
+    private int userCount;
 }
