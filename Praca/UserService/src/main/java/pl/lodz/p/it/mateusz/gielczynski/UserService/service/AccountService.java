@@ -1,7 +1,9 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.consts.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountCreateDto;
@@ -26,6 +28,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@Transactional(propagation = Propagation.REQUIRES_NEW)
 public class AccountService {
 
     private final AccountRepository accountRepository;
@@ -65,7 +68,6 @@ public class AccountService {
         accountRepository.saveAndFlush(account);
     }
 
-    @Transactional
     public void changePassword(UUID code, String newPassword) throws BadRequestException {
         PasswordResetToken token = passwordResetTokenRepository.findByIdAndExpiresAtAfter(code, LocalDateTime.now()).orElseThrow(() -> new BadRequestException(i18n.INVALID_RESET_CODE));
         Account account = token.getAccount();
@@ -103,8 +105,12 @@ public class AccountService {
         Group group = new Group(account.getLogin());
         account.getGroups().add(group);
 
-        accountRepository.saveAndFlush(account);    //todo check validation
-        groupRepository.saveAndFlush(group);
+        try {
+            accountRepository.saveAndFlush(account);
+            groupRepository.saveAndFlush(group);
+        } catch (DataIntegrityViolationException e) { //todo check if its only possible violation
+            throw new BadRequestException(i18n.LOGIN_IN_USE);
+        }
     }
 
     public String login(String login, String password) throws BadRequestException {

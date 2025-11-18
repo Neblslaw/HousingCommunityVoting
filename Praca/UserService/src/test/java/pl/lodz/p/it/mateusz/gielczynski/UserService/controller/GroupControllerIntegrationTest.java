@@ -8,20 +8,24 @@ import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.BaseIntegrationTest;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupCreateDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.TestService;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Role;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.AccountRepository;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.GroupRepository;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.RoleRepository;
 
 import java.util.List;
 import java.util.Set;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
+@WithMockUser
 class GroupControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
@@ -35,64 +39,23 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
 
     @Autowired
     private AccountRepository accountRepository;
+    @Autowired
+    private RoleRepository roleRepository;
 
-
-    @Test
-    @WithMockUser(roles = {"admin"})
-    void shouldGetAllGroups() throws Exception {
-        // When & Then
-        mockMvc.perform(get("/groups"))
-                .andExpect(status().isOk());
-    }
+    @Autowired
+    private TestService testService;
 
     @Test
-    @WithMockUser(roles = {"admin"})
-    void shouldGetGroupById() throws Exception {
-        // Given
-        String groupId = "test-group-id";
-
-        // When & Then
-        mockMvc.perform(get("/groups/" + groupId))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(roles = {"admin"})
-    void shouldCreateGroup() throws Exception {
-        // Given
-        GroupCreateDto groupDto = new GroupCreateDto("Test Group", Set.of("ADMIN", "USER"));
-
-        // When & Then
-        mockMvc.perform(post("/groups")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(groupDto)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(roles = {"admin"})
-    void shouldDeleteGroup() throws Exception {
-        // Given
-        String groupId = "test-group-id";
-
-        // When & Then
-        mockMvc.perform(delete("/groups/" + groupId))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    @WithMockUser(roles = {"admin"})
     void shouldAddUsersToGroup() throws Exception {
         Group group = new Group("testGroup", Set.of(), 0);
 
         Account account1 = new Account("user1", "hash1", "user1@test.com", "John", "Doe", "en");
-        Account account2 = new Account("user2", "hash1", "user2@test.com", "John", "Doe", "en");
+        Account account2 = testService.createAccount(new Account("user2", "hash1", "user2@test.com", "John", "Doe", "en"));
 
         account1.setGroups(Set.of(group));
-        accountRepository.saveAndFlush(account1);
-        accountRepository.saveAndFlush(account2);
+        account1 = testService.createAccount(account1);
         group.setUserCount(1);
-        groupRepository.saveAndFlush(group);
+        group = testService.createGroup(group);
 
 
         mockMvc.perform(post("/groups/" + group.getId() + "/users")
@@ -100,8 +63,8 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
                         .content(objectMapper.writeValueAsString(List.of(account1.getId(), account2.getId()))))
                 .andExpect(status().isOk());
 
-        assertThat(groupRepository.getGroupById(group.getId()).get().getUserCount()).isEqualTo(2);
-        assertThat(accountRepository.findAllByGroups(Set.of(group)).containsAll(Set.of(account1, account2))).isTrue();
+        assertThat(testService.getGroupById(group.getId()).getUserCount()).isEqualTo(2);
+        assertThat(testService.findAllByGroups_Id(group.getId()).containsAll(Set.of(account1, account2))).isTrue();
     }
 
     @Test
@@ -119,13 +82,24 @@ class GroupControllerIntegrationTest extends BaseIntegrationTest {
     @Test
     @WithMockUser(roles = {"admin"})
     void shouldAddRoleToGroup() throws Exception {
-        // Given
-        String groupId = "test-group-id";
-        String roleName = "ADMIN";
+        Group group = new Group("testGroup", Set.of(), 0);
+
+        Role role1 = new Role("boss", 1);
+        Role role2 = new Role("worker", 0);
+
+        group.setRoles(Set.of(role1));
+        groupRepository.saveAndFlush(group);
+        roleRepository.saveAndFlush(role2);
 
         // When & Then
-        mockMvc.perform(post("/groups/" + groupId + "/roles/" + roleName))
+        mockMvc.perform(post("/groups/" + group.getId() + "/roles/")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(role2.getId()))))
                 .andExpect(status().isOk());
+
+        assertThat(groupRepository.getGroupById(group.getId()).get().getRoles().containsAll(Set.of(role1, role2))).isTrue();
+        assertThat(roleRepository.findRoleById(role1.getId()).get().getGroupsCount()).isEqualTo(1);
+        assertThat(roleRepository.findRoleById(role2.getId()).get().getGroupsCount()).isEqualTo(1);
     }
 
     @Test

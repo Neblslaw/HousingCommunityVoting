@@ -108,7 +108,6 @@ public class LoggingAspect {
 
     @Before("within(@org.springframework.web.bind.annotation.RestController *)")
     public void logControllerStart(JoinPoint joinPoint) {
-        System.out.println("xd");
         HttpServletRequest request = ((ServletRequestAttributes) RequestContextHolder.currentRequestAttributes()).getRequest();
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         String user = auth != null ? auth.getName() : "anonymous";

@@ -6,9 +6,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.mapper.RoleMapper;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Role;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.service.RoleReadService;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.service.RoleWriteService;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/roles")
@@ -17,19 +23,21 @@ import java.util.List;
 @MethodCallLogged
 class RoleController {
 
+    private final RoleReadService roleReadService;
+    private final RoleWriteService roleWriteService;
 
     @PostMapping
-    public void createRole(RoleCreateDto roleCreateDto) {
-
+    public Role createRole(RoleCreateDto roleCreateDto) throws BadRequestException {
+        return roleWriteService.createRole(roleCreateDto.name());
     }
 
-    @DeleteMapping
-    public void deleteRole(String roleName) {
-
+    @DeleteMapping("/{id}")
+    public void deleteRole(UUID id) {
+        roleWriteService.deleteRole(id);
     }
 
     @GetMapping
     public List<RoleDto> getRoles() {
-        return List.of();
+        return RoleMapper.toDto(roleReadService.findAll());
     }
 }

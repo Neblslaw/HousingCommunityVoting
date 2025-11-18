@@ -17,5 +17,10 @@ public class Role extends AbstractEntity {
     @Column(nullable = false, unique = true, updatable = false)
     private String name;
 
-    private int userCount;
+    private int groupsCount;
+
+    public Role(String name) {
+        this.name = name;
+        this.groupsCount = 0;
+    }
 }

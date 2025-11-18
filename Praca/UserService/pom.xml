@@ -19,7 +19,7 @@
     <dependencies>
         <dependency>
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
-            <artifactId>exceptions</artifactId>
+            <artifactId>Exceptions</artifactId>
             <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>

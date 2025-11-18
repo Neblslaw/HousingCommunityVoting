@@ -1,14 +1,15 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.repository;
 
 import org.springframework.data.repository.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 
+@Transactional(propagation = Propagation.MANDATORY)
 public interface AccountRepository extends Repository<Account, UUID> {
 
     List<Account> findAll();
@@ -30,5 +31,5 @@ public interface AccountRepository extends Repository<Account, UUID> {
     //todo fix pls
     void deleteAll();
 
-    List<Account> findAllByGroups(Set<Group> groups);
+    List<Account> findAllByGroups_Id(UUID groups_id);
 }
