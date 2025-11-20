@@ -11,6 +11,7 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.LoginDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.service.AccountService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
+import pl.lodz.p.it.mateusz.gielczynski.logger.Sensitive;
 
 import java.util.UUID;
 
@@ -24,13 +25,13 @@ public class AuthController {
     private final AccountService accountService;
 
     @PostMapping("/login")
-    public String login(@RequestBody @Valid LoginDto loginDto) throws BadRequestException {
+    public String login(@RequestBody @Sensitive @Valid LoginDto loginDto) throws BadRequestException {
         System.out.println("Login");
         return accountService.login(loginDto.login(), loginDto.password());
     }
 
     @PostMapping("/register/{inviteCode}")
-    public void Register(@RequestBody @Valid AccountCreateDto accountCreateDto, @PathVariable UUID inviteCode, @RequestHeader(HttpHeaders.ACCEPT_LANGUAGE) String language) throws BadRequestException {
+    public void Register(@RequestBody @Valid @Sensitive AccountCreateDto accountCreateDto, @PathVariable @Sensitive UUID inviteCode, @RequestHeader(HttpHeaders.ACCEPT_LANGUAGE) String language) throws BadRequestException {
         accountService.createAccount(accountCreateDto, inviteCode, language);
     }
 

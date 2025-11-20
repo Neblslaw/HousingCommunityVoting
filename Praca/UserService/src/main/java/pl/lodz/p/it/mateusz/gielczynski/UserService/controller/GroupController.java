@@ -1,5 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -47,7 +48,7 @@ class GroupController {
     }
 
     @PostMapping
-    public GroupDetailsDto createGroup(GroupCreateDto groupCreateDto) throws BadRequestException {
+    public GroupDetailsDto createGroup(@RequestBody @Valid GroupCreateDto groupCreateDto) throws BadRequestException {
         Group group = groupWriteService.createGroup(groupCreateDto);
         return GroupMapper.toDetailedDto(group, new HashSet<>());
     }

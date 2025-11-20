@@ -14,6 +14,7 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.service.AccountService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
 import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
+import pl.lodz.p.it.mateusz.gielczynski.logger.Sensitive;
 
 import java.util.Set;
 import java.util.UUID;
@@ -44,12 +45,12 @@ public class AccountController {
 //    }
 
     @PostMapping("/password/reset")
-    public void changePassword(@RequestBody @Valid AccountPasswordChangeDto accountPasswordChangeDto) throws BadRequestException {
+    public void changePassword(@RequestBody @Sensitive @Valid AccountPasswordChangeDto accountPasswordChangeDto) throws BadRequestException {
         accountService.changePassword(accountPasswordChangeDto.resetCode(), accountPasswordChangeDto.newPassword());
     }
 
     @PostMapping("/password/reset/request")
-    public void changePassword(@RequestBody @Valid AccountPasswordResetRequestDto accountPasswordResetRequestDto) {
+    public void changePassword(@RequestBody @Sensitive @Valid AccountPasswordResetRequestDto accountPasswordResetRequestDto) {
         accountService.requestPasswordChange(accountPasswordResetRequestDto.email());
     }
 
