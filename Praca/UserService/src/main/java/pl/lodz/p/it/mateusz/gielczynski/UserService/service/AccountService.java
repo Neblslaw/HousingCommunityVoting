@@ -113,6 +113,7 @@ public class AccountService {
         }
     }
 
+    //todo refresh token?
     public String login(String login, String password) throws BadRequestException {
         Account account = accountRepository.findAccountByLogin(login).orElseThrow(() -> new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH));
         if (account.getPasswordHash().equals(password)) {   //todo fix password check

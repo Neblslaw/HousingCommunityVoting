@@ -2,9 +2,6 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -27,15 +24,6 @@ public class AuthController {
     public String login(@RequestBody LoginDto loginDto) throws BadRequestException {
         System.out.println("Login");
         return accountService.login(loginDto.login(), loginDto.password());
-    }
-
-    //todo remove
-    @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('Zbychu')")
-    public String me(@AuthenticationPrincipal Jwt userPrincipal) {
-        System.out.println(userPrincipal.getClaims());
-        System.out.println(userPrincipal.getSubject());
-        return userPrincipal.toString();
     }
 
     @PostMapping("/register/{inviteCode}")

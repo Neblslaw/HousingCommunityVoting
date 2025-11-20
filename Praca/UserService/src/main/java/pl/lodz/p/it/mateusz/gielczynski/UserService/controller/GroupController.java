@@ -5,13 +5,16 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupCreateDto;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupDetailsDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupDto;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.mapper.GroupMapper;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.service.GroupReadService;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.service.GroupWriteService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,23 +28,24 @@ class GroupController {
     private final GroupReadService groupReadService;
 
     @GetMapping
-    public List<Group> getGroups() {
-        return groupReadService.findAll();
+    public List<GroupDto> getGroups() {
+        return GroupMapper.toDto(groupReadService.findAll());
     }
 
-    @GetMapping("{id}/members")
-    public List<Account> getGroupMembers(@PathVariable UUID id) {
-        return groupReadService.findMembers(id);
-    }
+//    @GetMapping("{id}/members")
+//    public List<AccountDto> getGroupMembers(@PathVariable UUID id) {
+//        return groupReadService.findMembers(id);
+//    }
 
     @GetMapping("/{id}")
-    public Group getGroupById(@PathVariable UUID id) throws NotFoundException {
-        return groupReadService.findById(id);
+    public GroupDetailsDto getGroupById(@PathVariable UUID id) throws NotFoundException {
+        return GroupMapper.toDetailedDto(groupReadService.findById(id), new HashSet<>(groupReadService.findMembers(id)));
     }
 
     @PostMapping
-    public Group createGroup(GroupCreateDto groupCreateDto) throws BadRequestException {
-        return groupWriteService.createGroup(groupCreateDto);
+    public GroupDetailsDto createGroup(GroupCreateDto groupCreateDto) throws BadRequestException {
+        Group group = groupWriteService.createGroup(groupCreateDto);
+        return GroupMapper.toDetailedDto(group, new HashSet<>());
     }
 
     @DeleteMapping("/{id}")
@@ -54,7 +58,7 @@ class GroupController {
         groupWriteService.addUsersToGroup(groupId, usersToAdd);
     }
 
-    @DeleteMapping("/{groupId}/users/{userId}")
+    @DeleteMapping("/{groupId}/users")
     public void removeUsersFromGroup(@PathVariable UUID groupId, @RequestBody List<UUID> usersToRemove) throws NotFoundException {
         groupWriteService.removeUsersFromGroup(groupId, usersToRemove);
     }

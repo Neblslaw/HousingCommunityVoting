@@ -5,6 +5,7 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.GroupDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
 
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -13,8 +14,13 @@ public class GroupMapper {
     public static GroupDto toDto(Group group) {
         return new GroupDto(
                 group.getId(),
-                group.getName()
+                group.getName(),
+                group.getUserCount()
         );
+    }
+
+    public static List<GroupDto> toDto(List<Group> groups) {
+        return groups.stream().map(GroupMapper::toDto).collect(Collectors.toList());
     }
 
     public static GroupDetailsDto toDetailedDto(Group group, Set<Account> accounts) {

@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.RoleDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.mapper.RoleMapper;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Role;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.service.RoleReadService;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.service.RoleWriteService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
@@ -27,8 +26,8 @@ class RoleController {
     private final RoleWriteService roleWriteService;
 
     @PostMapping
-    public Role createRole(RoleCreateDto roleCreateDto) throws BadRequestException {
-        return roleWriteService.createRole(roleCreateDto.name());
+    public RoleDto createRole(RoleCreateDto roleCreateDto) throws BadRequestException {
+        return RoleMapper.toDto(roleWriteService.createRole(roleCreateDto.name()));
     }
 
     @DeleteMapping("/{id}")
