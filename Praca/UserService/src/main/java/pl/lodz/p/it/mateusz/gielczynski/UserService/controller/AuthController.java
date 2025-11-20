@@ -1,5 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.transaction.annotation.Propagation;
@@ -9,6 +10,7 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.LoginDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.service.AccountService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
+import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
 
 import java.util.UUID;
 
@@ -16,18 +18,19 @@ import java.util.UUID;
 @RequestMapping("/myauth")
 @RequiredArgsConstructor
 @Transactional(propagation = Propagation.NEVER)
+@MethodCallLogged
 public class AuthController {
 
     private final AccountService accountService;
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginDto loginDto) throws BadRequestException {
+    public String login(@RequestBody @Valid LoginDto loginDto) throws BadRequestException {
         System.out.println("Login");
         return accountService.login(loginDto.login(), loginDto.password());
     }
 
     @PostMapping("/register/{inviteCode}")
-    public void Register(@RequestBody AccountCreateDto accountCreateDto, @PathVariable UUID inviteCode, @RequestHeader(HttpHeaders.ACCEPT_LANGUAGE) String language) throws BadRequestException {
+    public void Register(@RequestBody @Valid AccountCreateDto accountCreateDto, @PathVariable UUID inviteCode, @RequestHeader(HttpHeaders.ACCEPT_LANGUAGE) String language) throws BadRequestException {
         accountService.createAccount(accountCreateDto, inviteCode, language);
     }
 

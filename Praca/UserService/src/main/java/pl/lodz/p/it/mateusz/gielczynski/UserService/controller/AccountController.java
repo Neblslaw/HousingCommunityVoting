@@ -1,5 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -43,12 +44,12 @@ public class AccountController {
 //    }
 
     @PostMapping("/password/reset")
-    public void changePassword(@RequestBody AccountPasswordChangeDto accountPasswordChangeDto) throws BadRequestException {
+    public void changePassword(@RequestBody @Valid AccountPasswordChangeDto accountPasswordChangeDto) throws BadRequestException {
         accountService.changePassword(accountPasswordChangeDto.resetCode(), accountPasswordChangeDto.newPassword());
     }
 
     @PostMapping("/password/reset/request")
-    public void changePassword(@RequestBody AccountPasswordResetRequestDto accountPasswordResetRequestDto) {
+    public void changePassword(@RequestBody @Valid AccountPasswordResetRequestDto accountPasswordResetRequestDto) {
         accountService.requestPasswordChange(accountPasswordResetRequestDto.email());
     }
 

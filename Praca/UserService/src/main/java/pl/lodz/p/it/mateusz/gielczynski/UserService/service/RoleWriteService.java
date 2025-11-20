@@ -7,11 +7,13 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.consts.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Role;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.RoleRepository;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
+import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
 
 import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@MethodCallLogged
 public class RoleWriteService {
 
     private final RoleRepository roleRepository;

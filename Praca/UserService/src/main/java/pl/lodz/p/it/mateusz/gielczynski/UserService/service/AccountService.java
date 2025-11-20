@@ -20,6 +20,7 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.PasswordResetToke
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.InternalServerErrorException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
+import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,6 +29,7 @@ import java.util.UUID;
 
 @RequiredArgsConstructor
 @Service
+@MethodCallLogged
 @Transactional(propagation = Propagation.REQUIRES_NEW)
 public class AccountService {
 
