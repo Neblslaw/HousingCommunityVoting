@@ -25,6 +25,7 @@
         <module>SecurityClient</module>
         <module>Loggers</module>
         <module>VotingEngine</module>
+        <module>VotingService</module>
     </modules>
     <scm>
         <connection/>
