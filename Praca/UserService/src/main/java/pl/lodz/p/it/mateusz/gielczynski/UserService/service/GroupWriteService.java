@@ -133,6 +133,6 @@ public class GroupWriteService {
             throw new BadRequestException(i18n.CANNOT_DELETE_GROUP_WITH_USERS);
         }
 
-        groupRepository.deleteGroup(group);
+        groupRepository.deleteGroupById(group.getId());
     }
 }

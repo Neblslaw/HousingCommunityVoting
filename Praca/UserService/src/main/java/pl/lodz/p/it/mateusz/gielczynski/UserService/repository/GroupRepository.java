@@ -22,5 +22,5 @@ public interface GroupRepository extends Repository<Group, UUID> {
 
     void deleteAll();
 
-    void deleteGroup(Group group);
+    void deleteGroupById(UUID groupId);
 }
