@@ -38,7 +38,7 @@ public class JwtSecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder decoder, JwtAuthenticationConverter converter) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(authorizeRequests -> {
@@ -59,8 +59,8 @@ public class JwtSecurityConfig {
                 )
                 .oauth2ResourceServer(oauth2 -> oauth2
                         .jwt(jwt -> jwt
-                                .decoder(jwtDecoder())
-                                .jwtAuthenticationConverter(jwtAuthenticationConverter()))
+                                .decoder(decoder)
+                                .jwtAuthenticationConverter(converter))
                 );
         return http.build();
     }
@@ -77,14 +77,12 @@ public class JwtSecurityConfig {
     }
 
 
+    @Bean
     public JwtDecoder jwtDecoder() {
-        try {
-            return NimbusJwtDecoder.withPublicKey(publicKey).signatureAlgorithm(SignatureAlgorithm.RS512).build();
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to initialize JWT decoder", e);
-        }
+        return NimbusJwtDecoder.withPublicKey(publicKey).signatureAlgorithm(SignatureAlgorithm.RS512).build();
     }
 
+    @Bean
     private JwtAuthenticationConverter jwtAuthenticationConverter() {
         JwtGrantedAuthoritiesConverter grantedAuthoritiesConverter = new JwtGrantedAuthoritiesConverter();
         grantedAuthoritiesConverter.setAuthoritiesClaimName("roles");

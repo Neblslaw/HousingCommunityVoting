@@ -119,7 +119,7 @@ public class AccountService {
     public String login(String login, String password) throws BadRequestException {
         Account account = accountRepository.findAccountByLogin(login).orElseThrow(() -> new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH));
         if (account.getPasswordHash().equals(password)) {   //todo fix password check
-            return tokenProvider.generateToken(account.getLogin(), account.getRoles()); //todo add email
+            return tokenProvider.generateToken(account.getId(), account.getLogin(), account.getRoles()); //todo add email
         }
         throw new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH);
     }

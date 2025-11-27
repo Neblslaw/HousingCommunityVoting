@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import java.security.PrivateKey;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 //todo move to UserService
 @Component
@@ -20,9 +21,10 @@ public class TokenProvider {
     @Value("${jwt.issuer:http://localhost:8080}")
     private String issuer;
 
-    public String generateToken(String username, List<String> userRoles) {//todo add email
+    public String generateToken(UUID id, String username, List<String> userRoles) {//todo add email
         return Jwts.builder()
-                .subject(username)
+                .subject(id.toString())
+                .claim("name", username)
                 .claim("roles", userRoles)
                 .issuer(issuer)
                 .issuedAt(new Date(System.currentTimeMillis()))

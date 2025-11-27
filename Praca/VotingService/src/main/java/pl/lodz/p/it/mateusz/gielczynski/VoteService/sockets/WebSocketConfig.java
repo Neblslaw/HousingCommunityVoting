@@ -12,10 +12,12 @@ import org.springframework.web.socket.config.annotation.WebSocketHandlerRegistry
 public class WebSocketConfig implements WebSocketConfigurer {
 
     private final VoteHandler voteHandler;
+    private final JwtHandshakeInterceptor jwtHandshakeInterceptor;
 
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(voteHandler, "/votes");
+        registry.addHandler(voteHandler, "/votes")
+                .addInterceptors(jwtHandshakeInterceptor);
     }
 }
