@@ -30,16 +30,18 @@ public class VoteHandler extends TextWebSocketHandler {
         JwtAuth xd = (JwtAuth) session.getAttributes().get("AUTH");
         System.out.println(xd);
         System.out.println("connection established");
-        if (organizers.isEmpty()) {
-            organizers.add(session);
+
+        if (voters.stream().anyMatch(voter -> voter.getUserId().equals(xd.id()))) {
+            System.out.println("Voter reconnected");
+            voters.stream().filter(voter -> voter.getUserId().equals(xd.id())).forEach(voter ->
+                    {
+                        voter.setSession(session);
+                        voter.setConnected(true);
+                    }
+            );
         } else {
-            if (voters.stream().anyMatch(voter -> voter.getSession().equals(session))) {
-                voters.stream().filter(voter -> voter.getSession().equals(session)).forEach(voter -> {
-                    voter.setConnected(true);
-                });
-            } else {
-                voters.add(new VoterState(UUID.randomUUID(), UUID.randomUUID(), List.of(new Question("what", List.of("yes", "no"))), session));
-            }
+            System.out.println("Voter connected");
+            voters.add(new VoterState(xd.id(), UUID.randomUUID(), List.of(new Question("what", List.of("yes", "no"))), session));
         }
     }
 
