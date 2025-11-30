@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import org.springframework.web.socket.WebSocketSession;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Question;
 import pl.lodz.p.it.mateusz.gielczynski.model.Vote;
 
 import java.util.List;
@@ -35,7 +36,7 @@ public class VoterState {
     public Vote vote(String option) throws InvalidVoteException {
         Question question = questions.get(questionNumber);
 
-        if (question.answers().contains(option)) {
+        if (question.getAnswers().contains(option)) {
             if (questionNumber + 1 < questions.size()) {
                 questionNumber++;
             }

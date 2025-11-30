@@ -7,8 +7,8 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.JwtAuth;
-import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.Question;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.VoterState;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Question;
 
 import java.io.IOException;
 import java.util.ArrayList;
