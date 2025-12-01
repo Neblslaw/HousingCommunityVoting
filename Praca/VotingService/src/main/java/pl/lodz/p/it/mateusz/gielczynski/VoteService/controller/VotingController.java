@@ -30,6 +30,17 @@ public class VotingController {
         return VotingMapper.toDto(votingReadService.getVoting(id));
     }
 
+    @GetMapping("/owned/{id}") //todo remove uuid
+    public List<VotingDTO> getVotingsByOwner(@PathVariable UUID id) {
+        return VotingMapper.toDto(votingReadService.getVotingsOwnedByUser(id));
+    }
+
+    @GetMapping("/available/{id}")//todo rename + remove uuid
+    public List<VotingDTO> getVotingsByAvailable(@PathVariable UUID id) {
+        return VotingMapper.toDto(votingReadService.getVotingsByVoter(id));
+    }
+
+
     @PostMapping
     public VotingDTO addVoting(@RequestBody VotingDTO voting) {
         return VotingMapper.toDto(votingWriteService.createVoting(VotingMapper.toVoting(voting)));

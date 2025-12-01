@@ -1,5 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.repository;
 
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Voting;
 
@@ -15,4 +16,18 @@ public interface VotingRepository extends Repository<Voting, UUID> {
     List<Voting> findAll();
 
     void deleteById(UUID id);
+
+    List<Voting> getVotingsByOwner(UUID userId);
+
+    @Query(
+            value = """
+                    SELECT v.*
+                    FROM voting v
+                    JOIN voting_voting_groups vvg ON vvg.voting_id = v.id
+                    JOIN voting_group vg ON vg.id = vvg.voting_groups_id 
+                    WHERE :voterId = ANY(vg.voters)
+                    """,
+            nativeQuery = true
+    )
+    List<Voting> getVotingsByVotingGroups_Voters(UUID voterId);
 }

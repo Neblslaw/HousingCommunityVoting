@@ -24,4 +24,13 @@ public class VotingReadService {
     public List<Voting> getVotings() {
         return votingRepository.findAll();
     }
+
+    public List<Voting> getVotingsOwnedByUser(UUID userId) {
+        return votingRepository.getVotingsByOwner(userId);
+    }
+
+    public List<Voting> getVotingsByVoter(UUID voterId) {
+        return votingRepository.getVotingsByVotingGroups_Voters(voterId);
+    }
+
 }
