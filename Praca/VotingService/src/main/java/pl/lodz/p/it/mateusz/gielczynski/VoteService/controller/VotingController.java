@@ -2,7 +2,8 @@ package pl.lodz.p.it.mateusz.gielczynski.VoteService.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Voting;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VotingDTO;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.mapper.VotingMapper;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingReadService;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingWriteService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
@@ -20,23 +21,23 @@ public class VotingController {
     private final VotingWriteService votingWriteService;
 
     @GetMapping
-    public List<Voting> getVotings() {
-        return votingReadService.getVotings();
+    public List<VotingDTO> getVotings() {
+        return VotingMapper.toDto(votingReadService.getVotings());
     }
 
     @GetMapping("/{id}")
-    public Voting getVoting(@PathVariable UUID id) throws NotFoundException {
-        return votingReadService.getVoting(id);
+    public VotingDTO getVoting(@PathVariable UUID id) throws NotFoundException {
+        return VotingMapper.toDto(votingReadService.getVoting(id));
     }
 
     @PostMapping
-    public Voting addVoting(@RequestBody Voting voting) {
-        return votingWriteService.createVoting(voting);
+    public VotingDTO addVoting(@RequestBody VotingDTO voting) {
+        return VotingMapper.toDto(votingWriteService.createVoting(VotingMapper.toVoting(voting)));
     }
 
     @PutMapping
-    public Voting updateVoting(@RequestBody Voting voting) throws ConflictException, NotFoundException {
-        return votingWriteService.updateVoting(voting);
+    public VotingDTO updateVoting(@RequestBody VotingDTO voting) throws ConflictException, NotFoundException {
+        return VotingMapper.toDto(votingWriteService.updateVoting(voting.id(), VotingMapper.toVoting(voting)));
     }
 
     @DeleteMapping("/{id}")

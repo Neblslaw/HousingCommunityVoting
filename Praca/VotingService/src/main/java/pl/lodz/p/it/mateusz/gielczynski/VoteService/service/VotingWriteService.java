@@ -23,14 +23,20 @@ public class VotingWriteService {
         return votingRepository.save(voting); //todo exceptions
     }
 
-    public Voting updateVoting(Voting voting) throws ConflictException, NotFoundException {
-        Voting oldVoting = votingRepository.findById(voting.getId()).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
+    public Voting updateVoting(UUID id, Voting voting) throws ConflictException, NotFoundException {
+        Voting oldVoting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
 
         if (!oldVoting.getVersion().equals(voting.getVersion())) {
             throw new ConflictException(i18n.VOTING_CONCURRENT_UPDATE);
         }
 
-        return votingRepository.save(voting);
+        oldVoting.setName(voting.getName());
+        oldVoting.setOwner(voting.getOwner());
+        oldVoting.setQuestions(voting.getQuestions());
+        oldVoting.setStartTime(voting.getStartTime());
+        oldVoting.setVotingGroups(voting.getVotingGroups());
+
+        return votingRepository.save(oldVoting);
     }
 
 
