@@ -17,6 +17,6 @@ public class WebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(voteHandler, "/votes").addInterceptors(jwtHandshakeInterceptor);
+        registry.addHandler(voteHandler, "/votes/{id}").addInterceptors(jwtHandshakeInterceptor);
     }
 }

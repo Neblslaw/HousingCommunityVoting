@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.VoteService.sockets;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -29,6 +30,13 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     @Override
     public boolean beforeHandshake(ServerHttpRequest request, ServerHttpResponse response, WebSocketHandler wsHandler, Map<String, Object> attributes) throws Exception {
         if (!(request instanceof ServletServerHttpRequest servletRequest)) {
+            return false;
+        }
+
+        try {
+            attributes.put("ROOM_ID", extractRoomUUID(servletRequest.getURI().getPath()));
+        } catch (Exception e) {
+            response.setStatusCode(HttpStatus.BAD_REQUEST);
             return false;
         }
 
@@ -64,5 +72,9 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
             return header.substring(7);
         }
         return null;
+    }
+
+    private UUID extractRoomUUID(String path) {
+        return UUID.fromString(path.substring(path.lastIndexOf('/') + 1));
     }
 }

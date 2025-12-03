@@ -30,6 +30,19 @@ class StartupService {
         account.getGroups().add(zbychGroup);
         accountRepository.saveAndFlush(account);
         groupRepository.saveAndFlush(zbychGroup);
+
+        Account account2 = new Account();
+        account2.setLanguage("pl");
+        account2.setFirstName("Mateusz");
+        account2.setLogin("zbych2");
+        account2.setPasswordHash("ZAQ!2wsx");
+        account2.setLastName("Matesusz");
+        account2.setEmail("cos@coss.pl");
+        Group zbychGroup2 = new Group("zbych2");
+        zbychGroup2.getRoles().add(new Role("Zbych2", 1));
+        account2.getGroups().add(zbychGroup2);
+        accountRepository.saveAndFlush(account2);
+        groupRepository.saveAndFlush(zbychGroup2);
     }
 
 }
