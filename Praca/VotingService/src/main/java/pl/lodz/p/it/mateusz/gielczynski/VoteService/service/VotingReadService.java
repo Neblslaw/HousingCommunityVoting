@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Voting;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.VotingResult;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.repository.VotingRepository;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.repository.VotingResultRepository;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
 
 import java.util.List;
@@ -15,6 +17,7 @@ import java.util.UUID;
 public class VotingReadService {
 
     private final VotingRepository votingRepository;
+    private final VotingResultRepository votingResultRepository;
 
 
     public Voting getVoting(UUID votingId) throws NotFoundException {
@@ -33,4 +36,7 @@ public class VotingReadService {
         return votingRepository.getVotingsByVotingGroups_Voters(voterId);
     }
 
+    public List<VotingResult> getVotingResults(UUID votingId) {
+        return votingResultRepository.findAllByVoting_Id(votingId);
+    }
 }

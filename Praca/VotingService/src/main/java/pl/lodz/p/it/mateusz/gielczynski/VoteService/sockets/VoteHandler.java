@@ -1,5 +1,7 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.sockets;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.JwtAuth;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.VoterState;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.VotingSession;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingReadService;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingWriteService;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +27,8 @@ import java.util.UUID;
 public class VoteHandler extends TextWebSocketHandler {
 
     private final VotingReadService votingReadService;
+    private final VotingWriteService votingWriteService;
+    private final ObjectMapper objectMapper;
     Map<UUID, VotingSession> votingSessions = new HashMap<>();
 
     @Override
@@ -63,9 +68,27 @@ public class VoteHandler extends TextWebSocketHandler {
 
     }
 
+    private void handleVote(String body, WebSocketSession session) throws JsonProcessingException {
+        VoteRequestBody req = objectMapper.readValue(body, VoteRequestBody.class);
+        JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
+        UUID votingId = (UUID) session.getAttributes().get("ROOM_ID");
+
+
+//        votingSessions.get(votingId).getVoters().stream().filter(
+//                sessionState -> sessionState.getUserId().equals(jwtAuth.id())).findFirst().ifPresent(votingSession -> {
+//            votingSession.
+//        })
+
+        votingSessions.get(req.votingId).getVoting().getQuestions().stream().filter(voting -> voting.getId().equals(req.votingId)).findFirst()
+                .ifPresent(voting -> {
+
+                });
+
+    }
+
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
-//        System.out.println("Received message: " + message.getPayload());
+        System.out.println("Received message: " + message.getPayload());
 //        if (!session.getAttributes().containsKey("votes")) {
 //            session.getAttributes().put("votes", new ArrayList<String>());
 //        }
@@ -108,5 +131,23 @@ public class VoteHandler extends TextWebSocketHandler {
 //                    }
 //                }
 //        );
+    }
+
+
+    private enum RequestType {
+        VOTE, START_VOTING, END_VOTING
+    }
+
+    private record Request(
+            RequestType type,
+            String body
+    ) {
+    }
+
+    private record VoteRequestBody(
+            UUID votingId,
+            UUID questionId,
+            String answer
+    ) {
     }
 }
