@@ -1,8 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.sockets;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,11 +10,17 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VoteDTO;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.EndVoteRequestBody;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.Request;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.StartVoteRequestBody;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.VoteRequestBody;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.JwtAuth;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.VoterState;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.VotingSession;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingReadService;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingWriteService;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
 
 import java.io.IOException;
@@ -32,7 +36,7 @@ public class VoteHandler extends TextWebSocketHandler {
 
     private final VotingReadService votingReadService;
     private final VotingWriteService votingWriteService;
-    private final ObjectMapper objectMapper;
+    private final RequestParser requestParser;
     Map<UUID, VotingSession> votingSessions = new HashMap<>();
 
     @Override
@@ -72,31 +76,38 @@ public class VoteHandler extends TextWebSocketHandler {
 
     }
 
-    private void handleVote(JsonNode body, WebSocketSession session) throws JsonProcessingException, NotFoundException {
-        VoteRequestBody req = objectMapper.readValue(body.toString(), VoteRequestBody.class);  //todo try catch
+    private void handleVote(JsonNode body, WebSocketSession session) throws NotFoundException, BadRequestException {
+        VoteRequestBody req = requestParser.parseVoteRequest(body);
         JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
         UUID votingId = (UUID) session.getAttributes().get("ROOM_ID");
 
-        votingWriteService.vote(new VoteDTO(jwtAuth.id(), req.questionId, votingId, req.answer));
+        votingWriteService.vote(new VoteDTO(jwtAuth.id(), req.questionId(), votingId, req.answer()));
+
+        notifyOrganizer(req.votingId(), "User voted");
     }
 
-    private void handleStartVoting(JsonNode body, WebSocketSession session) throws NotFoundException, JsonProcessingException {
-        StartVoteRequestBody req = objectMapper.readValue(body.toString(), StartVoteRequestBody.class);  //todo try catch
+    private void handleStartVoting(JsonNode body, WebSocketSession session) throws NotFoundException, BadRequestException, ConflictException {
+        StartVoteRequestBody req = requestParser.parseStartVoteRequest(body);
         JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
 
-        if (votingReadService.getVoting(req.votingId).getOwner().equals(jwtAuth.id())) {
+        if (votingReadService.getVoting(req.votingId()).getOwner().equals(jwtAuth.id())) {
             votingWriteService.startVoting(req.votingId());
         }
+
+        notifyVoters(req.votingId(), "Voting will start in 20s");
     }
 
 
-    private void handleEndVoting(JsonNode body, WebSocketSession session) throws NotFoundException, JsonProcessingException {
-        EndVoteRequestBody req = objectMapper.readValue(body.toString(), EndVoteRequestBody.class);  //todo try catch
+    private void handleEndVoting(JsonNode body, WebSocketSession session) throws NotFoundException, BadRequestException, ConflictException {
+        EndVoteRequestBody req = requestParser.parseEndVoteRequest(body);
         JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
 
-        if (votingReadService.getVoting(req.votingId).getOwner().equals(jwtAuth.id())) {
+        if (votingReadService.getVoting(req.votingId()).getOwner().equals(jwtAuth.id())) {
             votingWriteService.endVoting(req.votingId());
         }
+
+        notifyVoters(req.votingId(), "Voting finished");
+
     }
 
     @Override
@@ -104,12 +115,12 @@ public class VoteHandler extends TextWebSocketHandler {
         try {
             System.out.println("Received message: " + message.getPayload());
 
-            Request request = objectMapper.readValue(message.getPayload(), Request.class);
+            Request request = requestParser.parseRequest(message.getPayload());
 
-            switch (request.type) {
-                case VOTE -> handleVote(request.body, session);
-                case START_VOTING -> handleStartVoting(request.body, session);
-                case END_VOTING -> handleEndVoting(request.body, session);
+            switch (request.type()) {
+                case VOTE -> handleVote(request.body(), session);
+                case START_VOTING -> handleStartVoting(request.body(), session);
+                case END_VOTING -> handleEndVoting(request.body(), session);
             }
         } catch (Exception e) {
             session.sendMessage(new TextMessage(VotingExceptionHandler.handleException(e)));
@@ -160,31 +171,39 @@ public class VoteHandler extends TextWebSocketHandler {
 //        );
     }
 
-
-    private enum RequestType {
-        VOTE, START_VOTING, END_VOTING
+    private void notifyVoters(UUID votingId, String message) {
+        if (!votingSessions.containsKey(votingId)) {
+            log.error("Tried to notify voters of inexistent voting {}", votingId);
+            return;
+        }
+        votingSessions.get(votingId).getVoters().stream().filter(voter -> {
+            return voter.getSession().isOpen();
+        }).forEach(
+                voter -> {
+                    try {
+                        voter.getSession().sendMessage(new TextMessage(message));
+                    } catch (IOException e) {
+                        log.error("Failed to notify voter {} in voting {}", voter.getUserId(), votingId);
+                    }
+                }
+        );
     }
 
-    private record Request(
-            RequestType type,
-            JsonNode body
-    ) {
-    }
+    private void notifyOrganizer(UUID votingId, String message) {
+        if (!votingSessions.containsKey(votingId)) {
+            log.error("Tried to notify organizer of inexistent voting {}", votingId);
+            return;
+        }
+        WebSocketSession session = votingSessions.get(votingId).getOwnerSession();
+        if (!session.isOpen()) {
+            log.error("Tried to notify organizer of inexistent voting");
+            return;
+        }
+        try {
+            session.sendMessage(new TextMessage(message));
+        } catch (IOException e) {
+            log.error("Failed to notify organizer in voting {}", votingId);
+        }
 
-    private record VoteRequestBody(
-            UUID votingId,
-            UUID questionId,
-            String answer
-    ) {
-    }
-
-    private record StartVoteRequestBody(
-            UUID votingId
-    ) {
-    }
-
-    private record EndVoteRequestBody(
-            UUID votingId
-    ) {
     }
 }
