@@ -1,8 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.UUID;
@@ -15,6 +13,8 @@ import java.util.UUID;
 @AllArgsConstructor
 public class VotingResultOption {
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
     UUID id;
     @Column(nullable = false, updatable = false)
     String option;

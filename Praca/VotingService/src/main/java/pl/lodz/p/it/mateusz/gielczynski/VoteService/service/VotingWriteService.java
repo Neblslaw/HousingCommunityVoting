@@ -1,5 +1,6 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import pl.lodz.p.it.mateusz.gielczynski.VoteEngineImpl;
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class VotingWriteService {
 
 

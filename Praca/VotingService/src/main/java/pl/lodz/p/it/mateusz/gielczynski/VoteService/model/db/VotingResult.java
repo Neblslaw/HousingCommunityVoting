@@ -15,8 +15,10 @@ import java.util.UUID;
 public class VotingResult {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.UUID)
+    @Setter(AccessLevel.NONE)
     UUID id;
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     List<VotingResultOption> results;
     @Column(nullable = false, updatable = false)
     Float voteCount;

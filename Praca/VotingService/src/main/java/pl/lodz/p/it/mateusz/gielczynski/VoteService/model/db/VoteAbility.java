@@ -18,7 +18,7 @@ import java.util.UUID;
 public class VoteAbility extends AbstractEntity {
     @ManyToOne
     Voting voting;
-    @Column(nullable = false)
+    @Column(nullable = false, name = "user_id")
     UUID user;
     @Column(nullable = false)
     UUID question;
