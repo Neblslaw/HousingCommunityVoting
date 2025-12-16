@@ -39,6 +39,9 @@ public class VotingWriteService {
 
     public Voting updateVoting(UUID id, Voting voting) throws ConflictException, NotFoundException {
         Voting oldVoting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
+        if (oldVoting.getLockTime() != null) {
+            throw new ConflictException(i18n.VOTING_LOCKED);
+        }
 
         if (!oldVoting.getVersion().equals(voting.getVersion())) {
             throw new ConflictException(i18n.VOTING_CONCURRENT_UPDATE);
@@ -47,19 +50,31 @@ public class VotingWriteService {
         oldVoting.setName(voting.getName());
         oldVoting.setOwner(voting.getOwner());
         oldVoting.setQuestions(voting.getQuestions());
-        oldVoting.setStartTime(voting.getStartTime());
+        oldVoting.setPlannedStartTime(voting.getPlannedStartTime());
         oldVoting.setVotingGroups(voting.getVotingGroups());
 
         return votingRepository.save(oldVoting);
     }
 
-    public void deleteVoting(UUID id) {
-        votingRepository.deleteById(id);
+    public void deleteVoting(UUID id) throws NotFoundException, ConflictException {
+        Voting voting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
+        if (voting.getLockTime() != null) {
+            throw new ConflictException(i18n.VOTING_LOCKED);
+        }
+        if (voting.getStartTime() != null) {
+            throw new ConflictException(i18n.VOTING_STARTED);
+        }
+        voteRepository.deleteVoting(voting);
     }
 
-    public LocalDateTime startVoting(UUID id) throws NotFoundException {
+    public LocalDateTime startVoting(UUID id) throws NotFoundException, ConflictException {
         Voting voting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
-
+        if (voting.getLockTime() == null) {
+            throw new ConflictException(i18n.VOTING_MOT_LOCKED);
+        }
+        if (voting.getStartTime() != null) {
+            throw new ConflictException(i18n.VOTING_STARTED);
+        }
 
         List<UUID> users = voting.getVotingGroups().stream().flatMap(votingGroup -> votingGroup.getVoters().stream()).distinct().toList();
         List<UUID> questions = voting.getQuestions().stream().map(AbstractEntity::getId).toList();
@@ -95,11 +110,18 @@ public class VotingWriteService {
         questionRepository.saveAndFlush(question);
     }
 
-    public void endVoting(UUID id) throws NotFoundException {
+    public void endVoting(UUID id) throws NotFoundException, ConflictException {
         voteAbilityRepository.deleteAllByVotingId(id);
 
         Voting voting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
 
+        if (voting.getStartTime() == null) {
+            throw new ConflictException(i18n.VOTING_NOT_STARTED);
+        }
+        if (voting.getEndTime() != null) {
+            throw new ConflictException(i18n.VOTING_ENDED);
+        }
+        voting.setEndTime(LocalDateTime.now());
 
         List<Vote> votes = voteRepository.findAllByVoting_Id(id);
 

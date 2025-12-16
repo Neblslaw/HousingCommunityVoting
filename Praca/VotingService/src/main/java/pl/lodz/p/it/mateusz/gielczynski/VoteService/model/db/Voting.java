@@ -27,7 +27,10 @@ public class Voting extends AbstractEntity {
     private UUID owner;
 
     @Column(nullable = false)
-    private LocalDateTime startTime;
+    private LocalDateTime plannedStartTime;
+    private LocalDateTime startTime = null;
+    private LocalDateTime endTime = null;
+    private LocalDateTime lockTime = null;
 
     @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true)
     private List<VotingGroup> votingGroups;

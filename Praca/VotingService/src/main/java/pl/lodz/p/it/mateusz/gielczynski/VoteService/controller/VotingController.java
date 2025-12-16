@@ -52,7 +52,7 @@ public class VotingController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteVoting(@PathVariable UUID id) {
+    public void deleteVoting(@PathVariable UUID id) throws ConflictException, NotFoundException {
         votingWriteService.deleteVoting(id);
     }
 }

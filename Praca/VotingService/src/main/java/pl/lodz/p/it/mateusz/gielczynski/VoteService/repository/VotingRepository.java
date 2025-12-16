@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Voting;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -15,7 +16,7 @@ public interface VotingRepository extends Repository<Voting, UUID> {
 
     List<Voting> findAll();
 
-    void deleteById(UUID id);
+    void deleteVotingByIdAndLockTime(UUID id, LocalDateTime lockTime);
 
     List<Voting> getVotingsByOwner(UUID userId);
 
