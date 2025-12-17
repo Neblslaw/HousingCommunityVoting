@@ -8,7 +8,7 @@ import java.util.List;
 public class RoleMapper {
 
     public static RoleDto toDto(Role role) {
-        return new RoleDto(role.getName());
+        return new RoleDto(role.getId(), role.getName());
     }
 
     public static List<RoleDto> toDto(List<Role> roles) {

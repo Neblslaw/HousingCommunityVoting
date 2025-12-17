@@ -45,7 +45,11 @@ public class AccountService {
     }
 
     public Account getAccount(UUID id) throws NotFoundException {
-        return accountRepository.findAccountById(id).orElseThrow(() -> new NotFoundException(i18n.ACCOUNT_NOT_FOUND));
+        Account account = accountRepository.findAccountById(id)
+                .orElseThrow(() -> new NotFoundException(i18n.ACCOUNT_NOT_FOUND));
+        // initialize lazy collections while transaction is open
+        account.getGroups().size();
+        return account;
     }
 
     public void updateAccount(String login, AccountCreateDto accountCreateDto) throws InternalServerErrorException {

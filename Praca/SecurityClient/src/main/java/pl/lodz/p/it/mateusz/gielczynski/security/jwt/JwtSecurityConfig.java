@@ -4,10 +4,12 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.oauth2.jose.jws.SignatureAlgorithm;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.security.oauth2.jwt.NimbusJwtDecoder;
@@ -15,9 +17,11 @@ import org.springframework.security.oauth2.server.resource.authentication.JwtAut
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
 
 import java.security.interfaces.RSAPublicKey;
 import java.util.Arrays;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -36,6 +40,15 @@ public class JwtSecurityConfig {
     @Value("${app.security.filter.anonymous:}")
     private String anonymousEndpoints;
 
+    CorsConfiguration corsConfigurationSource() {
+        var corsConfig = new CorsConfiguration();
+        corsConfig.setAllowedOrigins(List.of("*"));
+//        corsConfig.setAllowCredentials(true);
+        corsConfig.setAllowedMethods(List.of("GET", "PATCH", "POST", "PUT", "DELETE"));
+        corsConfig.addAllowedHeader("*");
+        corsConfig.addExposedHeader(HttpHeaders.ETAG);
+        return corsConfig;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http, JwtDecoder decoder, JwtAuthenticationConverter converter) throws Exception {
@@ -61,7 +74,10 @@ public class JwtSecurityConfig {
                         .jwt(jwt -> jwt
                                 .decoder(decoder)
                                 .jwtAuthenticationConverter(converter))
-                );
+                )
+                .cors(cors -> cors.configurationSource(_ -> corsConfigurationSource()))
+                .sessionManagement(sessionManagement ->
+                        sessionManagement.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
         return http.build();
     }
 

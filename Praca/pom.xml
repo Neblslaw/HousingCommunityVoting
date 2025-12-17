@@ -26,6 +26,7 @@
         <module>Loggers</module>
         <module>VotingEngine</module>
         <module>VotingService</module>
+        <module>EstateService</module>
     </modules>
     <scm>
         <connection/>
