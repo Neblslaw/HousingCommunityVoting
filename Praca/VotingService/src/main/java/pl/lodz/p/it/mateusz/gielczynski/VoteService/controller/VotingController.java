@@ -1,6 +1,9 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VotingDTO;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.mapper.VotingMapper;
@@ -15,6 +18,7 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/voting")
 @RequiredArgsConstructor
+@Transactional(propagation = Propagation.NEVER)
 public class VotingController {
 
     private final VotingReadService votingReadService;
@@ -42,13 +46,18 @@ public class VotingController {
 
 
     @PostMapping
-    public VotingDTO addVoting(@RequestBody VotingDTO voting) {
+    public VotingDTO addVoting(@RequestBody @Valid VotingDTO voting) {
         return VotingMapper.toDto(votingWriteService.createVoting(VotingMapper.toVoting(voting)));
     }
 
     @PutMapping
-    public VotingDTO updateVoting(@RequestBody VotingDTO voting) throws ConflictException, NotFoundException {
+    public VotingDTO updateVoting(@RequestBody @Valid VotingDTO voting) throws ConflictException, NotFoundException {
         return VotingMapper.toDto(votingWriteService.updateVoting(voting.id(), VotingMapper.toVoting(voting)));
+    }
+
+    @PostMapping("/{id}/lock")
+    public void lockVoting(@PathVariable UUID id) throws ConflictException, NotFoundException {
+        votingWriteService.lockVoting(id);
     }
 
     @DeleteMapping("/{id}")

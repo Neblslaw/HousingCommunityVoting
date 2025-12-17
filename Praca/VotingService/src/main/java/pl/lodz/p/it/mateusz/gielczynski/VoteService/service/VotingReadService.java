@@ -2,6 +2,8 @@ package pl.lodz.p.it.mateusz.gielczynski.VoteService.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Voting;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.VotingResult;
@@ -14,6 +16,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
 public class VotingReadService {
 
     private final VotingRepository votingRepository;

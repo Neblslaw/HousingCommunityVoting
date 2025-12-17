@@ -1,12 +1,14 @@
 package pl.lodz.p.it.mateusz.gielczynski.EstateService.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.EstateService.consts.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.EstateService.model.Building;
 import pl.lodz.p.it.mateusz.gielczynski.EstateService.repository.BuildingRepository;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
+import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
 
 import java.util.List;
 import java.util.Optional;
@@ -14,11 +16,13 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+@MethodCallLogged
 public class BuildingService {
 
     private final BuildingRepository buildingRepository;
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = true)
     public List<Building> getBuildings() {
         return buildingRepository.findAll();
     }

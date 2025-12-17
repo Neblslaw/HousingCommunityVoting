@@ -1,6 +1,9 @@
 package pl.lodz.p.it.mateusz.gielczynski.EstateService.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.EstateService.dto.BuildingDto;
 import pl.lodz.p.it.mateusz.gielczynski.EstateService.service.BuildingService;
@@ -15,12 +18,13 @@ import static pl.lodz.p.it.mateusz.gielczynski.EstateService.BuildingMapper.toBu
 @RestController
 @RequestMapping("/estate")
 @RequiredArgsConstructor
+@Transactional(propagation = Propagation.NEVER)
 public class BuildingController {
 
     private final BuildingService buildingService;
 
     @PutMapping
-    public BuildingDto setBuilding(@RequestBody BuildingDto buildingDto) throws ConflictException {
+    public BuildingDto setBuilding(@RequestBody @Valid BuildingDto buildingDto) throws ConflictException {
         return toBuildingDto(buildingService.setBuilding(toBuilding(buildingDto), buildingDto.id()));
     }
 

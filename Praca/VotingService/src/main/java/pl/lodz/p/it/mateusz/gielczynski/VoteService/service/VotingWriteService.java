@@ -1,8 +1,9 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.service;
 
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.VoteEngineImpl;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VoteDTO;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.i18n;
@@ -11,6 +12,8 @@ import pl.lodz.p.it.mateusz.gielczynski.VoteService.repository.*;
 import pl.lodz.p.it.mateusz.gielczynski.VotingEngine;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
+import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
+import pl.lodz.p.it.mateusz.gielczynski.logger.Sensitive;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -21,7 +24,8 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
-@Transactional
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
+@MethodCallLogged
 public class VotingWriteService {
 
 
@@ -90,7 +94,7 @@ public class VotingWriteService {
         return startTime;
     }
 
-    public void vote(VoteDTO voteDTO) throws NotFoundException {
+    public void vote(@Sensitive VoteDTO voteDTO) throws NotFoundException {
         if (!voteAbilityRepository.existsByUserAndQuestion(voteDTO.userId(), voteDTO.questionId())) {
             throw new NotFoundException(i18n.VOTE_ABILITY_NOT_FOUND);
         }
@@ -156,5 +160,14 @@ public class VotingWriteService {
                 ).forEach(votingResultRepository::saveAndFlush);
 
         voteRepository.deleteByVoting_Id(id);
+    }
+
+    public void lockVoting(UUID id) throws ConflictException, NotFoundException {
+        Voting oldVoting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
+        if (oldVoting.getLockTime() != null) {
+            throw new ConflictException(i18n.VOTING_LOCKED);
+        }
+        oldVoting.setLockTime(LocalDateTime.now());
+        votingRepository.save(oldVoting);
     }
 }
