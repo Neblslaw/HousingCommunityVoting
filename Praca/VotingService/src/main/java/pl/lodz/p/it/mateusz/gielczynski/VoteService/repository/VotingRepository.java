@@ -16,7 +16,7 @@ public interface VotingRepository extends Repository<Voting, UUID> {
 
     List<Voting> findAll();
 
-    void deleteVotingByIdAndLockTime(UUID id, LocalDateTime lockTime);
+    void deleteByIdAndLockTime(UUID id, LocalDateTime lockTime);
 
     List<Voting> getVotingsByOwner(UUID userId);
 
@@ -31,4 +31,6 @@ public interface VotingRepository extends Repository<Voting, UUID> {
             nativeQuery = true
     )
     List<Voting> getVotingsByVotingGroups_Voters(UUID voterId);
+
+    void delete(Voting voting);
 }

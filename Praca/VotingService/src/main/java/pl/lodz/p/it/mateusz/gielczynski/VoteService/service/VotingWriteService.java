@@ -53,9 +53,11 @@ public class VotingWriteService {
 
         oldVoting.setName(voting.getName());
         oldVoting.setOwner(voting.getOwner());
-        oldVoting.setQuestions(voting.getQuestions());
+        oldVoting.getQuestions().clear();
+        oldVoting.getQuestions().addAll(voting.getQuestions());
         oldVoting.setPlannedStartTime(voting.getPlannedStartTime());
-        oldVoting.setVotingGroups(voting.getVotingGroups());
+        oldVoting.getVotingGroups().clear();
+        oldVoting.getVotingGroups().addAll(voting.getVotingGroups());
 
         return votingRepository.save(oldVoting);
     }
@@ -68,7 +70,7 @@ public class VotingWriteService {
         if (voting.getStartTime() != null) {
             throw new ConflictException(i18n.VOTING_STARTED);
         }
-        voteRepository.deleteVoting(voting);
+        votingRepository.delete(voting);
     }
 
     public LocalDateTime startVoting(UUID id) throws NotFoundException, ConflictException {

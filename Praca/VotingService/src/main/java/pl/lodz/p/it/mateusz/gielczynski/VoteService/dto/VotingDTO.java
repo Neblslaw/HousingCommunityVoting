@@ -3,6 +3,7 @@ package pl.lodz.p.it.mateusz.gielczynski.VoteService.dto;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Null;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -14,7 +15,10 @@ public record VotingDTO(
         String name,
         @NotEmpty @NotNull List<QuestionDTO> questions,
         @NotEmpty @NotNull List<VotingGroupDTO> votingGroups,
-        UUID owner,
-        @Future LocalDateTime startTime
+        @NotNull UUID owner,
+        @Future LocalDateTime plannedStartTime,
+        @Null LocalDateTime startTime,
+        @Null LocalDateTime endTime,
+        @Null LocalDateTime lockTime
 ) {
 }

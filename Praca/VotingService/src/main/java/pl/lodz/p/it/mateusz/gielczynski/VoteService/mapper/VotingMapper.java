@@ -15,7 +15,10 @@ public class VotingMapper {
                 QuestionMapper.toDto(voting.getQuestions()),
                 VotingGroupMapper.toDto(voting.getVotingGroups()),
                 voting.getOwner(),
-                voting.getStartTime()
+                voting.getPlannedStartTime(),
+                voting.getStartTime(),
+                voting.getEndTime(),
+                voting.getLockTime()
         );
     }
     //todo signature
@@ -29,7 +32,8 @@ public class VotingMapper {
                 dto.name(),
                 QuestionMapper.toQuestions(dto.questions()),
                 dto.owner(),
-                dto.startTime(),
+                dto.plannedStartTime(),
+                null, null, null,
                 VotingGroupMapper.toVotingGroups(dto.votingGroups())
         );
         voting.setVersion(dto.version());
