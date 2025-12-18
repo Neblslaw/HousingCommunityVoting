@@ -2,12 +2,15 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.consts.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.dto.AccountCreateDto;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.email.EmailService;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.jwt.Token;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.jwt.TokenProvider;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
@@ -39,6 +42,8 @@ public class AccountService {
     private final InviteCodeRepository inviteCodeRepository;
     private final GroupRepository groupRepository;
     private final TokenProvider tokenProvider;
+    private final JwtDecoder jwtDecoder;
+
 
     public List<Account> getAccounts() {
         return accountRepository.findAll();
@@ -119,12 +124,18 @@ public class AccountService {
         }
     }
 
-    //todo refresh token?
-    public String login(String login, String password) throws BadRequestException {
+    public Token login(String login, String password) throws BadRequestException {
         Account account = accountRepository.findAccountByLogin(login).orElseThrow(() -> new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH));
         if (account.getPasswordHash().equals(password)) {   //todo fix password check
-            return tokenProvider.generateToken(account.getId(), account.getLogin(), account.getRoles()); //todo add email
+            return tokenProvider.generateToken(account.getId(), account.getLogin(), account.getRoles());
         }
         throw new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH);
+    }
+
+
+    public Token refreshToken(String refreshToken) throws BadRequestException {
+        Jwt jwt = jwtDecoder.decode(refreshToken);
+        Account account = accountRepository.findAccountById(UUID.fromString(jwt.getSubject())).orElseThrow(() -> new BadRequestException(i18n.ACCOUNT_NOT_FOUND));
+        return tokenProvider.generateToken(account.getId(), account.getLogin(), account.getRoles());
     }
 }

@@ -16,12 +16,22 @@ import java.util.UUID;
 public class TokenProvider {
 
     private final PrivateKey privateKey;
-    @Value("${jwt.expiration:360000}")
-    private long jwtExpirationInSeconds;
+    @Value("${jwt.auth.expiration:360000}")
+    private int jwtAuthExpirationInSeconds;
+    @Value("${jwt.refresh.expiration:360000000}")
+    private int jwtRefreshExpirationInSeconds;
     @Value("${jwt.issuer:http://localhost:8080}")
     private String issuer;
 
-    public String generateToken(UUID id, String username, List<String> userRoles) {//todo add email
+
+    public Token generateToken(UUID id, String username, List<String> userRoles) {
+        return new Token(
+                generateToken(id, username, userRoles, jwtAuthExpirationInSeconds),
+                generateToken(id, username, userRoles, jwtRefreshExpirationInSeconds)
+        );
+    }
+
+    private String generateToken(UUID id, String username, List<String> userRoles, long jwtExpirationInSeconds) {//todo add email
         return Jwts.builder()
                 .subject(id.toString())
                 .claim("name", username)
