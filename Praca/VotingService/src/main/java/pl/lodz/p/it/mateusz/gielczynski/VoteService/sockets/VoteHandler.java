@@ -125,33 +125,6 @@ public class VoteHandler extends TextWebSocketHandler {
         } catch (Exception e) {
             session.sendMessage(new TextMessage(VotingExceptionHandler.handleException(e)));
         }
-
-//        if (!session.getAttributes().containsKey("votes")) {
-//            session.getAttributes().put("votes", new ArrayList<String>());
-//        }
-//        ArrayList<String> votes = (ArrayList<String>) session.getAttributes().get("votes");
-//        votes.add(message.getPayload());
-//        session.sendMessage(new TextMessage(votes.toString()));
-//
-//        synchronized (this) {
-//            if (canVote) {
-//                messages.add(message.getPayload());
-//                canVote = false;
-//            }
-//        }
-//
-//
-//        voters.stream().filter(VoterState::isConnected).forEach(
-//                session1 -> {
-//                    synchronized (session1) {
-//                        try {
-//                            session1.getSession().sendMessage(new TextMessage(String.join("", messages)));
-//                        } catch (IOException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//                    }
-//                }
-//        );
     }
 
 

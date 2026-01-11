@@ -3,6 +3,8 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.consts.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Role;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.RoleRepository;
@@ -13,6 +15,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
 @MethodCallLogged
 public class RoleWriteService {
 

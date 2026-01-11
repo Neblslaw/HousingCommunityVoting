@@ -2,6 +2,8 @@ package pl.lodz.p.it.mateusz.gielczynski.VoteService.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.Repository;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Voting;
 
 import java.time.LocalDateTime;
@@ -9,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@Transactional(propagation = Propagation.MANDATORY, readOnly = false)
 public interface VotingRepository extends Repository<Voting, UUID> {
     Voting save(Voting voting);
 
