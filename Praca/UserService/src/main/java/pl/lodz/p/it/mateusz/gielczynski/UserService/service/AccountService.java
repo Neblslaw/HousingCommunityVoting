@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.jwt.JwtDecoder;
 import org.springframework.stereotype.Service;
@@ -43,6 +44,7 @@ public class AccountService {
     private final GroupRepository groupRepository;
     private final TokenProvider tokenProvider;
     private final JwtDecoder jwtDecoder;
+    private final PasswordEncoder passwordEncoder;
 
 
     public List<Account> getAccounts() {
@@ -82,7 +84,7 @@ public class AccountService {
     public void changePassword(UUID code, String newPassword) throws BadRequestException {
         PasswordResetToken token = passwordResetTokenRepository.findByIdAndExpiresAtAfter(code, LocalDateTime.now()).orElseThrow(() -> new BadRequestException(i18n.INVALID_RESET_CODE));
         Account account = token.getAccount();
-        account.setPasswordHash(newPassword); //todo hash
+        account.setPasswordHash(passwordEncoder.encode(newPassword));
         accountRepository.saveAndFlush(account);
         passwordResetTokenRepository.deletePasswordResetTokenById(code);
     }
@@ -110,7 +112,7 @@ public class AccountService {
         account.setEmail(accountCreateDto.email());
         account.setFirstName(accountCreateDto.firstName());
         account.setLastName(accountCreateDto.lastName());
-        account.setPasswordHash(accountCreateDto.password()); //todo hash
+        account.setPasswordHash(passwordEncoder.encode(accountCreateDto.password()));
         account.setLanguage(language);
 
         Group group = new Group(account.getLogin());
@@ -126,7 +128,7 @@ public class AccountService {
 
     public Token login(String login, String password) throws BadRequestException {
         Account account = accountRepository.findAccountByLogin(login).orElseThrow(() -> new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH));
-        if (account.getPasswordHash().equals(password)) {   //todo fix password check
+        if (passwordEncoder.matches(password, account.getPasswordHash())) {
             return tokenProvider.generateToken(account.getId(), account.getLogin(), account.getRoles());
         }
         throw new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH);

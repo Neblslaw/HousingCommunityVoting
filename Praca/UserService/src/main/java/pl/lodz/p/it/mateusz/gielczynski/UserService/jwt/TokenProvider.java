@@ -10,7 +10,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-//todo move to UserService
 @Component
 @RequiredArgsConstructor
 public class TokenProvider {
