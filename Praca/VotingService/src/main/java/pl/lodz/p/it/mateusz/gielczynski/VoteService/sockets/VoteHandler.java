@@ -18,6 +18,8 @@ import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.VoteRequestBody;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.JwtAuth;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.VoterState;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.VotingSession;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.AbstractEntity;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.VoteAbility;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingReadService;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingWriteService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
@@ -61,18 +63,21 @@ public class VoteHandler extends TextWebSocketHandler {
         if (jwtAuth.id().equals(votingSession.getVoting().getOwner())) {
             votingSession.setOwnerSession(session);
             notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new UserEvent(votingSession.getVoting().getId(), jwtAuth.id(), UserEventType.USER_CONNECTED)));
+            notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new JoinedEvent(votingSession.getVoting().getVotingGroups().stream().flatMap(votingGroup -> votingGroup.getVoters().stream()).distinct().toList())));
         } else if (votingSession.getVoting().getVotingGroups().stream().anyMatch(votingGroup -> votingGroup.getVoters().contains(jwtAuth.id()))) {
             List<VoterState> voter = votingSession.getVoters().stream().filter(sessionState -> sessionState.getUserId().equals(jwtAuth.id())).toList();
             if (voter.isEmpty()) {
                 votingSession.getVoters().add(new VoterState(
                         jwtAuth.id(),
-                        votingSession.getVoting().getVotingGroups().stream().filter(vg -> vg.getVoters().contains(jwtAuth.id())).map(vg -> vg.getId()).toList(),
+                        votingSession.getVoting().getVotingGroups().stream().filter(vg -> vg.getVoters().contains(jwtAuth.id())).map(AbstractEntity::getId).toList(),
                         session
                 ));
                 notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new UserEvent(votingSession.getVoting().getId(), jwtAuth.id(), UserEventType.USER_CONNECTED)));
+                notifyVoter(votingSession.getVoting().getId(), jwtAuth.id(), eventSerializer.serialize(new JoinedEvent(votingReadService.getVoteAbilitiesByVotingAndUser(votingSession.getVoting().getId(), jwtAuth.id()).stream().map(VoteAbility::getQuestion).toList())));
             } else {
                 voter.getFirst().setSession(session);
                 notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new UserEvent(votingSession.getVoting().getId(), jwtAuth.id(), UserEventType.USER_RECONNECTED)));
+                notifyVoter(votingSession.getVoting().getId(), jwtAuth.id(), eventSerializer.serialize(new JoinedEvent(votingReadService.getVoteAbilitiesByVotingAndUser(votingSession.getVoting().getId(), jwtAuth.id()).stream().map(VoteAbility::getQuestion).toList())));
             }
         }
 
@@ -149,6 +154,24 @@ public class VoteHandler extends TextWebSocketHandler {
                         voter.getSession().sendMessage(new TextMessage(message));
                     } catch (IOException e) {
                         log.error("Failed to notify voter {} in voting {}", voter.getUserId(), votingId);
+                    }
+                }
+        );
+    }
+
+    private void notifyVoter(UUID votingId, UUID voter, String message) {
+        if (!votingSessions.containsKey(votingId)) {
+            log.error("Tried to notify voters of inexistent voting {}", votingId);
+            return;
+        }
+        votingSessions.get(votingId).getVoters().stream().filter(voterr -> {
+            return voterr.getSession().isOpen() && voterr.getUserId().equals(voter);
+        }).forEach(
+                voterr -> {
+                    try {
+                        voterr.getSession().sendMessage(new TextMessage(message));
+                    } catch (IOException e) {
+                        log.error("Failed to notify voter {} in voting {}", voterr.getUserId(), votingId);
                     }
                 }
         );

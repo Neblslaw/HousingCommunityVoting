@@ -5,8 +5,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.i18n;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.VoteAbility;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.Voting;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.VotingResult;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.repository.VoteAbilityRepository;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.repository.VotingRepository;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.repository.VotingResultRepository;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
@@ -21,6 +23,7 @@ public class VotingReadService {
 
     private final VotingRepository votingRepository;
     private final VotingResultRepository votingResultRepository;
+    private final VoteAbilityRepository voteAbilityRepository;
 
 
     public Voting getVoting(UUID votingId) throws NotFoundException {
@@ -42,4 +45,9 @@ public class VotingReadService {
     public List<VotingResult> getVotingResults(UUID votingId) {
         return votingResultRepository.findAllByVoting_Id(votingId);
     }
+
+    public List<VoteAbility> getVoteAbilitiesByVotingAndUser(UUID votingId, UUID user) {
+        return voteAbilityRepository.getVoteAbilitiesByVoting_IdAndUser(votingId, user);
+    }
+
 }

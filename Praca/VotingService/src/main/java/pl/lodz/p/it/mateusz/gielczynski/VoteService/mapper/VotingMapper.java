@@ -15,8 +15,10 @@ public class VotingMapper {
     private final JWSHelper jwsHelper;
 
     public Voting toVoting(VotingDTO dto) throws PreconditionFailedException {
-        if (!jwsHelper.generateSignature(dto.id().toString() + dto.version().toString()).equals(dto.signature())) {
-            throw new PreconditionFailedException();
+        if (dto.id() != null) {
+            if (!jwsHelper.generateSignature(dto.id() + dto.version().toString()).equals(dto.signature())) {
+                throw new PreconditionFailedException();
+            }
         }
         Voting voting = new Voting(
                 dto.name(),

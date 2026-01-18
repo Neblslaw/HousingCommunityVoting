@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService;
 
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
@@ -15,6 +16,7 @@ class StartupService {
 
     private final AccountRepository accountRepository;
     private final GroupRepository groupRepository;
+    private final PasswordEncoder passwordEncoder;
 
     @Transactional
     public void generateAccounts() {
@@ -22,7 +24,7 @@ class StartupService {
         account.setLanguage("pl");
         account.setFirstName("Mateusz");
         account.setLogin("zbych");
-        account.setPasswordHash("ZAQ!2wsx");
+        account.setPasswordHash(passwordEncoder.encode("ZAQ!2wsx"));
         account.setLastName("Mateusz");
         account.setEmail("cos@cos.pl");
         Group zbychGroup = new Group("zbych");
@@ -35,7 +37,7 @@ class StartupService {
         account2.setLanguage("pl");
         account2.setFirstName("Mateusz");
         account2.setLogin("zbych2");
-        account2.setPasswordHash("ZAQ!2wsx");
+        account2.setPasswordHash(passwordEncoder.encode("ZAQ!2wsx"));
         account2.setLastName("Matesusz");
         account2.setEmail("cos@coss.pl");
         Group zbychGroup2 = new Group("zbych2");

@@ -10,6 +10,7 @@ import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VoteDTO;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.i18n;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.*;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.repository.*;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.sse.NotificationService;
 import pl.lodz.p.it.mateusz.gielczynski.VotingEngine;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
@@ -36,6 +37,7 @@ public class VotingWriteService {
     private final VotingGroupRepository votingGroupRepository;
     private final VoteRepository voteRepository;
     private final VotingResultRepository votingResultRepository;
+    private final NotificationService notificationService;
 
 
     public Voting createVoting(Voting voting) {
@@ -192,5 +194,7 @@ public class VotingWriteService {
         }
         oldVoting.setLockTime(LocalDateTime.now());
         votingRepository.saveAndFlush(oldVoting);
+        oldVoting.getVotingGroups().stream().flatMap(votingGroup -> votingGroup.getVoters().stream()).distinct().forEach(
+                user -> notificationService.notify(user, "Voting locked"));
     }
 }

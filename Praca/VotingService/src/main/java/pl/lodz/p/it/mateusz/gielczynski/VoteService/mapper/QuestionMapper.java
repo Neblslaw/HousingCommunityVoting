@@ -13,7 +13,7 @@ public class QuestionMapper {
     }
 
     public static QuestionDTO toDto(Question question) {
-        return new QuestionDTO(question.getQuestion(), question.getAnswers());
+        return new QuestionDTO(question.getId(), question.getQuestion(), question.getAnswers());
     }
 
     public static Question toQuestion(QuestionDTO questionDTO) {
