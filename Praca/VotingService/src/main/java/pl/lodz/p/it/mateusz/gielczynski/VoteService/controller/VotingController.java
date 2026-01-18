@@ -11,6 +11,7 @@ import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingReadService;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingWriteService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
+import pl.lodz.p.it.mateusz.gielczynski.exceptions.PreconditionFailedException;
 
 import java.util.List;
 import java.util.UUID;
@@ -23,36 +24,36 @@ public class VotingController {
 
     private final VotingReadService votingReadService;
     private final VotingWriteService votingWriteService;
+    private final VotingMapper votingMapper;
 
     @GetMapping
     public List<VotingDTO> getVotings() {
-        return VotingMapper.toDto(votingReadService.getVotings());
+        return votingMapper.toDto(votingReadService.getVotings());
     }
 
     @GetMapping("/{id}")
     public VotingDTO getVoting(@PathVariable UUID id) throws NotFoundException {
-        return VotingMapper.toDto(votingReadService.getVoting(id));
+        return votingMapper.toDto(votingReadService.getVoting(id));
     }
 
     @GetMapping("/owned/{id}") //todo remove uuid
     public List<VotingDTO> getVotingsByOwner(@PathVariable UUID id) {
-        return VotingMapper.toDto(votingReadService.getVotingsOwnedByUser(id));
+        return votingMapper.toDto(votingReadService.getVotingsOwnedByUser(id));
     }
 
     @GetMapping("/available/{id}")//todo rename + remove uuid
     public List<VotingDTO> getVotingsByAvailable(@PathVariable UUID id) {
-        return VotingMapper.toDto(votingReadService.getVotingsByVoter(id));
+        return votingMapper.toDto(votingReadService.getVotingsByVoter(id));
     }
 
-
     @PostMapping
-    public VotingDTO addVoting(@RequestBody @Valid VotingDTO voting) {
-        return VotingMapper.toDto(votingWriteService.createVoting(VotingMapper.toVoting(voting)));
+    public VotingDTO addVoting(@RequestBody @Valid VotingDTO voting) throws PreconditionFailedException {
+        return votingMapper.toDto(votingWriteService.createVoting(votingMapper.toVoting(voting)));
     }
 
     @PutMapping
-    public VotingDTO updateVoting(@RequestBody @Valid VotingDTO voting) throws ConflictException, NotFoundException {
-        return VotingMapper.toDto(votingWriteService.updateVoting(voting.id(), VotingMapper.toVoting(voting)));
+    public VotingDTO updateVoting(@RequestBody @Valid VotingDTO voting) throws ConflictException, NotFoundException, PreconditionFailedException {
+        return votingMapper.toDto(votingWriteService.updateVoting(voting.id(), votingMapper.toVoting(voting)));
     }
 
     @PostMapping("/{id}/lock")

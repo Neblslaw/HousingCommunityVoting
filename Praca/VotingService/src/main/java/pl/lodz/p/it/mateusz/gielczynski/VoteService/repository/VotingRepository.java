@@ -13,7 +13,7 @@ import java.util.UUID;
 
 @Transactional(propagation = Propagation.MANDATORY, readOnly = false)
 public interface VotingRepository extends Repository<Voting, UUID> {
-    Voting save(Voting voting);
+    Voting saveAndFlush(Voting voting);
 
     Optional<Voting> findById(UUID id);
 

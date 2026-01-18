@@ -10,6 +10,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VoteDTO;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.event.*;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.EndVoteRequestBody;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.Request;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.StartVoteRequestBody;
@@ -37,6 +38,7 @@ public class VoteHandler extends TextWebSocketHandler {
     private final VotingReadService votingReadService;
     private final VotingWriteService votingWriteService;
     private final RequestParser requestParser;
+    private final EventSerializer eventSerializer;
     Map<UUID, VotingSession> votingSessions = new HashMap<>();
 
     @Override
@@ -58,7 +60,7 @@ public class VoteHandler extends TextWebSocketHandler {
         VotingSession votingSession = votingSessions.get(votingId);
         if (jwtAuth.id().equals(votingSession.getVoting().getOwner())) {
             votingSession.setOwnerSession(session);
-            session.sendMessage(new TextMessage("witam szefa"));
+            notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new UserEvent(votingSession.getVoting().getId(), jwtAuth.id(), UserEventType.USER_CONNECTED)));
         } else if (votingSession.getVoting().getVotingGroups().stream().anyMatch(votingGroup -> votingGroup.getVoters().contains(jwtAuth.id()))) {
             List<VoterState> voter = votingSession.getVoters().stream().filter(sessionState -> sessionState.getUserId().equals(jwtAuth.id())).toList();
             if (voter.isEmpty()) {
@@ -67,10 +69,10 @@ public class VoteHandler extends TextWebSocketHandler {
                         votingSession.getVoting().getVotingGroups().stream().filter(vg -> vg.getVoters().contains(jwtAuth.id())).map(vg -> vg.getId()).toList(),
                         session
                 ));
-                session.sendMessage(new TextMessage("witam pajaca"));
+                notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new UserEvent(votingSession.getVoting().getId(), jwtAuth.id(), UserEventType.USER_CONNECTED)));
             } else {
                 voter.getFirst().setSession(session);
-                session.sendMessage(new TextMessage("re witam pajaca"));
+                notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new UserEvent(votingSession.getVoting().getId(), jwtAuth.id(), UserEventType.USER_RECONNECTED)));
             }
         }
 
@@ -83,7 +85,7 @@ public class VoteHandler extends TextWebSocketHandler {
 
         votingWriteService.vote(new VoteDTO(jwtAuth.id(), req.questionId(), votingId, req.answer()));
 
-        notifyOrganizer(req.votingId(), "User voted");
+        notifyOrganizer(req.votingId(), eventSerializer.serialize(new UserVotedEvent(req.votingId())));
     }
 
     private void handleStartVoting(JsonNode body, WebSocketSession session) throws NotFoundException, BadRequestException, ConflictException {
@@ -94,7 +96,7 @@ public class VoteHandler extends TextWebSocketHandler {
             votingWriteService.startVoting(req.votingId());
         }
 
-        notifyVoters(req.votingId(), "Voting will start in 20s");
+        notifyVoters(req.votingId(), eventSerializer.serialize(new VotingEvent(req.votingId(), VotingEventType.VOTING_STARTED)));
     }
 
 
@@ -106,15 +108,13 @@ public class VoteHandler extends TextWebSocketHandler {
             votingWriteService.endVoting(req.votingId());
         }
 
-        notifyVoters(req.votingId(), "Voting finished");
+        notifyVoters(req.votingId(), eventSerializer.serialize(new VotingEvent(req.votingId(), VotingEventType.VOTING_FINISHED)));
 
     }
 
     @Override
     protected void handleTextMessage(WebSocketSession session, TextMessage message) throws IOException {
         try {
-            System.out.println("Received message: " + message.getPayload());
-
             Request request = requestParser.parseRequest(message.getPayload());
 
             switch (request.type()) {
@@ -129,19 +129,11 @@ public class VoteHandler extends TextWebSocketHandler {
 
 
     @Override
-    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
-//        voters.remove(session);
-//        organizers.forEach(
-//                organizer -> {
-//                    synchronized (organizer) {
-//                        try {
-//                            organizer.sendMessage(new TextMessage("User disconnected"));
-//                        } catch (IOException e) {
-//                            throw new RuntimeException(e);
-//                        }
-//                    }
-//                }
-//        );
+    public void afterConnectionClosed(WebSocketSession session, CloseStatus status) {
+        JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
+        UUID votingId = (UUID) session.getAttributes().get("ROOM_ID");
+
+        notifyOrganizer(votingId, eventSerializer.serialize(new UserEvent(votingId, jwtAuth.id(), UserEventType.USER_DISCONNECTED)));
     }
 
     private void notifyVoters(UUID votingId, String message) {

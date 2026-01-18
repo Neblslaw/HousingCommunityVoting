@@ -1,6 +1,7 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.service;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,9 +39,12 @@ public class VotingWriteService {
 
 
     public Voting createVoting(Voting voting) {
-        return votingRepository.save(voting); //todo exceptions
+        return votingRepository.saveAndFlush(voting); //todo exceptions
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+    )
     public Voting updateVoting(UUID id, Voting voting) throws ConflictException, NotFoundException {
         Voting oldVoting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
         if (oldVoting.getLockTime() != null) {
@@ -59,9 +63,12 @@ public class VotingWriteService {
         oldVoting.getVotingGroups().clear();
         oldVoting.getVotingGroups().addAll(voting.getVotingGroups());
 
-        return votingRepository.save(oldVoting);
+        return votingRepository.saveAndFlush(oldVoting);
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+    )
     public void deleteVoting(UUID id) throws NotFoundException, ConflictException {
         Voting voting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
         if (voting.getLockTime() != null) {
@@ -73,6 +80,9 @@ public class VotingWriteService {
         votingRepository.delete(voting);
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+    )
     public LocalDateTime startVoting(UUID id) throws NotFoundException, ConflictException {
         Voting voting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
         if (voting.getLockTime() == null) {
@@ -91,11 +101,16 @@ public class VotingWriteService {
             }
         }
 
-        LocalDateTime startTime = LocalDateTime.now().plusSeconds(20);
+        LocalDateTime startTime = LocalDateTime.now();
         voting.setStartTime(startTime);
+        votingRepository.saveAndFlush(voting);
         return startTime;
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class},
+            maxAttempts = 15
+    )
     public void vote(@Sensitive VoteDTO voteDTO) throws NotFoundException {
         if (!voteAbilityRepository.existsByUserAndQuestion(voteDTO.userId(), voteDTO.questionId())) {
             throw new NotFoundException(i18n.VOTE_ABILITY_NOT_FOUND);
@@ -116,6 +131,9 @@ public class VotingWriteService {
         questionRepository.saveAndFlush(question);
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+    )
     public void endVoting(UUID id) throws NotFoundException, ConflictException {
         voteAbilityRepository.deleteAllByVotingId(id);
 
@@ -164,12 +182,15 @@ public class VotingWriteService {
         voteRepository.deleteByVoting_Id(id);
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+    )
     public void lockVoting(UUID id) throws ConflictException, NotFoundException {
         Voting oldVoting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
         if (oldVoting.getLockTime() != null) {
             throw new ConflictException(i18n.VOTING_LOCKED);
         }
         oldVoting.setLockTime(LocalDateTime.now());
-        votingRepository.save(oldVoting);
+        votingRepository.saveAndFlush(oldVoting);
     }
 }

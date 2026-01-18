@@ -19,6 +19,7 @@ public record VotingDTO(
         @Future LocalDateTime plannedStartTime,
         @Null LocalDateTime startTime,
         @Null LocalDateTime endTime,
-        @Null LocalDateTime lockTime
+        @Null LocalDateTime lockTime,
+        String signature
 ) {
 }

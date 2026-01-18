@@ -23,6 +23,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.retry</groupId>
+            <artifactId>spring-retry</artifactId>
+            <scope>compile</scope>
+        </dependency>
+        <dependency>
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
             <artifactId>Loggers</artifactId>
             <version>0.0.1-SNAPSHOT</version>

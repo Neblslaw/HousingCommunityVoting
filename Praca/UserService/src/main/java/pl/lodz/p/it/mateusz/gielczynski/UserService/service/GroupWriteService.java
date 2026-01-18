@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,7 +55,10 @@ public class GroupWriteService {
         return null;
     }
 
-    //todo add retry
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class},
+            maxAttempts = 10
+    )
     public void addUsersToGroup(UUID groupId, List<UUID> users) throws NotFoundException {
         Group group = groupRepository.getGroupById(groupId).orElseThrow(() -> new NotFoundException(i18n.GROUP_NOT_FOUND));
         int groupsAdded = 0;
@@ -75,6 +79,10 @@ public class GroupWriteService {
         groupRepository.saveAndFlush(group);
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class},
+            maxAttempts = 10
+    )
     public void removeUsersFromGroup(UUID groupId, List<UUID> users) throws NotFoundException {
         Group group = groupRepository.getGroupById(groupId).orElseThrow(() -> new NotFoundException(i18n.GROUP_NOT_FOUND));
         int groupsRemoved = 0;
@@ -95,6 +103,10 @@ public class GroupWriteService {
         groupRepository.saveAndFlush(group);
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class},
+            maxAttempts = 10
+    )
     public void addRolesToGroup(UUID groupId, List<UUID> rolesToAdd) throws NotFoundException {
         Group group = groupRepository.getGroupById(groupId).orElseThrow(() -> new NotFoundException(i18n.GROUP_NOT_FOUND));
 
@@ -110,6 +122,10 @@ public class GroupWriteService {
         groupRepository.saveAndFlush(group);
     }
 
+    @Retryable(
+            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class},
+            maxAttempts = 10
+    )
     public void removeRolesFromGroup(UUID groupId, List<UUID> rolesToRemove) throws NotFoundException {
         Group group = groupRepository.getGroupById(groupId).orElseThrow(() -> new NotFoundException(i18n.GROUP_NOT_FOUND));
 
