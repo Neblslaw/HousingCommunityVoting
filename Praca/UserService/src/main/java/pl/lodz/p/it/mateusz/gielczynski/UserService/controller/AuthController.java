@@ -9,6 +9,7 @@ import org.apache.tomcat.util.http.SameSiteCookies;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -81,6 +82,7 @@ public class AuthController {
     }
 
     @PostMapping("/register/{inviteCode}")
+    @PreAuthorize("hasRole('accounts:invite')")
     public void Register(@RequestBody @Valid @Sensitive AccountCreateDto accountCreateDto, @PathVariable @Sensitive UUID inviteCode, @RequestHeader(HttpHeaders.ACCEPT_LANGUAGE) String language) throws BadRequestException {
         accountService.createAccount(accountCreateDto, inviteCode, language);
     }

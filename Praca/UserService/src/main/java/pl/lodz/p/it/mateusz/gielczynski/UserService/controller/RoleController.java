@@ -1,6 +1,7 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -26,16 +27,19 @@ class RoleController {
     private final RoleWriteService roleWriteService;
 
     @PostMapping
+    @PreAuthorize("hasRole('role:create')")
     public RoleDto createRole(RoleCreateDto roleCreateDto) throws BadRequestException {
         return RoleMapper.toDto(roleWriteService.createRole(roleCreateDto.name()));
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('role:delete')")
     public void deleteRole(UUID id) {
         roleWriteService.deleteRole(id);
     }
 
     @GetMapping
+    @PreAuthorize("hasRole('role:read')")
     public List<RoleDto> getRoles() {
         return RoleMapper.toDto(roleReadService.findAll());
     }

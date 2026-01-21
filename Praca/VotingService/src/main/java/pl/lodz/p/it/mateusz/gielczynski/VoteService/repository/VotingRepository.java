@@ -25,7 +25,7 @@ public interface VotingRepository extends Repository<Voting, UUID> {
 
     @Query(
             value = """
-                    SELECT v.*
+                    SELECT DISTINCT v.*
                     FROM voting v
                     JOIN voting_voting_groups vvg ON vvg.voting_id = v.id
                     JOIN voting_group vg ON vg.id = vvg.voting_groups_id 

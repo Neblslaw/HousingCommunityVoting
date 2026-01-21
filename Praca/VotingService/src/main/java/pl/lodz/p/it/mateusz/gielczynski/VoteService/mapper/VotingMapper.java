@@ -16,7 +16,7 @@ public class VotingMapper {
 
     public Voting toVoting(VotingDTO dto) throws PreconditionFailedException {
         if (dto.id() != null) {
-            if (!jwsHelper.generateSignature(dto.id() + dto.version().toString()).equals(dto.signature())) {
+            if (!jwsHelper.generateSignature(dto.id() + dto.version().toString() + dto.owner()).equals(dto.signature())) {
                 throw new PreconditionFailedException();
             }
         }
@@ -44,7 +44,7 @@ public class VotingMapper {
                 voting.getStartTime(),
                 voting.getEndTime(),
                 voting.getLockTime(),
-                jwsHelper.generateSignature(voting.getId().toString() + voting.getVersion().toString())
+                jwsHelper.generateSignature(voting.getId().toString() + voting.getVersion().toString() + voting.getOwner())
         );
     }
 

@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.UserService.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -29,12 +30,15 @@ public class AccountController {
 
     private final AccountService accountService;
 
+
     @GetMapping
+    @PreAuthorize("hasRole('accounts:read')")
     public Set<AccountDto> getAccounts() {
         return accountService.getAccounts().stream().map(AccountMapper::toDto).collect(Collectors.toSet());
     }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('accounts:read')")
     public AccountDetailsDto getAccountById(@PathVariable UUID id) throws NotFoundException {
         return AccountMapper.toDetailedDto(accountService.getAccount(id));
     }
@@ -55,6 +59,7 @@ public class AccountController {
     }
 
     @PostMapping("/{id}/archive")
+    @PreAuthorize("hasRole('accounts:archive')")
     public void archiveAccount(@PathVariable UUID id) throws NotFoundException {
         accountService.archiveAccount(id);
     }

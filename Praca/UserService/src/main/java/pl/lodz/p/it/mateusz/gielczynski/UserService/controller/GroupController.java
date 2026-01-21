@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -33,6 +34,7 @@ class GroupController {
     private final GroupReadService groupReadService;
 
     @GetMapping
+    @PreAuthorize("hasRole('groups:read')")
     public List<GroupDto> getGroups() {
         return GroupMapper.toDto(groupReadService.findAll());
     }
@@ -43,37 +45,44 @@ class GroupController {
 //    }
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('groups:read')")
     public GroupDetailsDto getGroupById(@PathVariable UUID id) throws NotFoundException {
         return GroupMapper.toDetailedDto(groupReadService.findById(id), new HashSet<>(groupReadService.findMembers(id)));
     }
 
     @PostMapping
+    @PreAuthorize("hasRole('groups:create')")
     public GroupDetailsDto createGroup(@RequestBody @Valid GroupCreateDto groupCreateDto) throws BadRequestException {
         Group group = groupWriteService.createGroup(groupCreateDto);
         return GroupMapper.toDetailedDto(group, new HashSet<>());
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('groups:delete')")
     public void deleteGroup(@PathVariable UUID id) throws NotFoundException, BadRequestException {
         groupWriteService.deleteGroup(id);
     }
 
     @PostMapping("/{groupId}/users")
+    @PreAuthorize("hasRole('groups:edit')")
     public void addUsersToGroup(@PathVariable UUID groupId, @RequestBody @NotNull @NotEmpty List<UUID> usersToAdd) throws NotFoundException {
         groupWriteService.addUsersToGroup(groupId, usersToAdd);
     }
 
     @DeleteMapping("/{groupId}/users")
+    @PreAuthorize("hasRole('groups:edit')")
     public void removeUsersFromGroup(@PathVariable UUID groupId, @RequestBody @NotNull @NotEmpty List<UUID> usersToRemove) throws NotFoundException {
         groupWriteService.removeUsersFromGroup(groupId, usersToRemove);
     }
 
     @PostMapping("/{groupId}/roles")
+    @PreAuthorize("hasRole('groups:edit')")
     public void addRolesToGroup(@PathVariable UUID groupId, @RequestBody @NotNull @NotEmpty List<UUID> rolesToAdd) throws NotFoundException {
         groupWriteService.addRolesToGroup(groupId, rolesToAdd);
     }
 
     @DeleteMapping("/{groupId}/roles")
+    @PreAuthorize("hasRole('groups:edit')")
     public void removeRolesFromGroup(@PathVariable UUID groupId, @RequestBody @NotNull @NotEmpty List<UUID> rolesToRemove) throws NotFoundException {
         groupWriteService.removeRolesFromGroup(groupId, rolesToRemove);
     }

@@ -10,6 +10,7 @@ public record BuildingDto(
         @NotEmpty @NotNull List<FloorDto> floors,
         @NotNull String name,
         UUID id,
-        Long version
+        Long version,
+        String signature
 ) {
 }
