@@ -27,6 +27,7 @@
         <module>VotingEngine</module>
         <module>VotingService</module>
         <module>EstateService</module>
+        <module>NotificationService</module>
     </modules>
     <scm>
         <connection/>

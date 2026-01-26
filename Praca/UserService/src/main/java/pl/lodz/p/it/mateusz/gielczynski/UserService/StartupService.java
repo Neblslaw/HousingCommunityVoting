@@ -41,6 +41,10 @@ class StartupService {
         Role votingsManage = new Role("votings:manage", 1);
         Role estateRead = new Role("estate:read", 1);
         Role estateManage = new Role("estate:manage", 1);
+        Role notificationRead = new Role("notifications:read", 1);
+        Role notificationWrite = new Role("notifications:create", 1);
+        Role notificationArchive = new Role("notifications:archive", 1);
+
 
         roleRepository.saveAndFlush(accountsRead);
         roleRepository.saveAndFlush(accountsArchive);
@@ -58,16 +62,22 @@ class StartupService {
         roleRepository.saveAndFlush(votingsManage);
         roleRepository.saveAndFlush(estateRead);
         roleRepository.saveAndFlush(estateManage);
+        roleRepository.saveAndFlush(notificationRead);
+        roleRepository.saveAndFlush(notificationWrite);
+        roleRepository.saveAndFlush(notificationArchive);
 
         Group accManager = new Group("Accounts Manager", new HashSet<>(Set.of(accountsRead, accountsInvite, accountsArchive, groupsRead, groupsCreate, groupsDelete, groupsEdit, roleCreate, roleDelete, roleRead)), 1);
         Group votingCreator = new Group("Voting Creator", new HashSet<>(Set.of(votingsReadAll, votingsManage, accountsRead, estateRead)), 1);
         Group votingParticipant = new Group("Voting participant", new HashSet<>(Set.of(votingsParticipate, votingsRead)), 1);
         Group estateManager = new Group("Estate Manager", new HashSet<>(Set.of(estateRead, estateManage, accountsRead)), 1);
+        Group notificationsUser = new Group("Notifications Manager", new HashSet<>(Set.of(notificationArchive, notificationRead, notificationWrite)), 1);
+
 
         groupRepository.saveAndFlush(accManager);
         groupRepository.saveAndFlush(votingCreator);
         groupRepository.saveAndFlush(votingParticipant);
         groupRepository.saveAndFlush(estateManager);
+        groupRepository.saveAndFlush(notificationsUser);
 
 
         Account account = new Account();
@@ -81,6 +91,7 @@ class StartupService {
         zbychGroup.getRoles().add(new Role("Zbych", 1));
         account.getGroups().add(zbychGroup);
         account.getGroups().add(accManager);
+        account.getGroups().add(notificationsUser);
         accountRepository.saveAndFlush(account);
         groupRepository.saveAndFlush(zbychGroup);
 
