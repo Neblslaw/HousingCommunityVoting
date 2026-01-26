@@ -44,7 +44,7 @@ public class VoteHandler extends TextWebSocketHandler {
     Map<UUID, VotingSession> votingSessions = new HashMap<>();
 
     @Override
-    public void afterConnectionEstablished(@NonNull WebSocketSession session) throws Exception {
+    public void afterConnectionEstablished(@NonNull WebSocketSession session) {
         JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
         UUID votingId = (UUID) session.getAttributes().get("ROOM_ID");
 
@@ -63,7 +63,10 @@ public class VoteHandler extends TextWebSocketHandler {
         if (jwtAuth.id().equals(votingSession.getVoting().getOwner())) {
             votingSession.setOwnerSession(session);
             notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new UserEvent(votingSession.getVoting().getId(), jwtAuth.id(), UserEventType.USER_CONNECTED)));
-            notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new JoinedEvent(votingSession.getVoting().getVotingGroups().stream().flatMap(votingGroup -> votingGroup.getVoters().stream()).distinct().toList())));
+            notifyOrganizer(votingSession.getVoting().getId(), eventSerializer.serialize(new JoinedEvent(
+                    votingSession.getVoters().stream().filter(voterState -> voterState.getSession().isOpen()).distinct().map(VoterState::getUserId).toList()
+//                    votingSession.getVoting().getVotingGroups().stream().flatMap(votingGroup -> votingGroup.getVoters().stream()).distinct().toList()
+            )));
         } else if (votingSession.getVoting().getVotingGroups().stream().anyMatch(votingGroup -> votingGroup.getVoters().contains(jwtAuth.id()))) {
             List<VoterState> voter = votingSession.getVoters().stream().filter(sessionState -> sessionState.getUserId().equals(jwtAuth.id())).toList();
             if (voter.isEmpty()) {
@@ -102,6 +105,7 @@ public class VoteHandler extends TextWebSocketHandler {
         }
 
         notifyVoters(req.votingId(), eventSerializer.serialize(new VotingEvent(req.votingId(), VotingEventType.VOTING_STARTED)));
+        notifyOrganizer(req.votingId(), eventSerializer.serialize(new VotingEvent(req.votingId(), VotingEventType.VOTING_STARTED)));
     }
 
 
@@ -114,7 +118,7 @@ public class VoteHandler extends TextWebSocketHandler {
         }
 
         notifyVoters(req.votingId(), eventSerializer.serialize(new VotingEvent(req.votingId(), VotingEventType.VOTING_FINISHED)));
-
+        notifyOrganizer(req.votingId(), eventSerializer.serialize(new VotingEvent(req.votingId(), VotingEventType.VOTING_FINISHED)));
     }
 
     @Override

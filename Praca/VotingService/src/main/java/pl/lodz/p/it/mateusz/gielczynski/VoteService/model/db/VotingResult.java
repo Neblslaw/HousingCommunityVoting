@@ -18,12 +18,12 @@ public class VotingResult {
     @GeneratedValue(strategy = GenerationType.UUID)
     @Setter(AccessLevel.NONE)
     UUID id;
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     List<VotingResultOption> results;
     @Column(nullable = false, updatable = false)
     Float voteCount;
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     Question question;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     Voting voting;
 }

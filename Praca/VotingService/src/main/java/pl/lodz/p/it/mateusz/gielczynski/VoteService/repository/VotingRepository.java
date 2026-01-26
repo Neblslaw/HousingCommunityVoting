@@ -30,10 +30,11 @@ public interface VotingRepository extends Repository<Voting, UUID> {
                     JOIN voting_voting_groups vvg ON vvg.voting_id = v.id
                     JOIN voting_group vg ON vg.id = vvg.voting_groups_id 
                     WHERE :voterId = ANY(vg.voters)
+                    AND v.lock_time is null 
                     """,
             nativeQuery = true
     )
-    List<Voting> getVotingsByVotingGroups_Voters(UUID voterId);
+    List<Voting> getVotingsByVotingGroups_Voter(UUID voterId);
 
     void delete(Voting voting);
 }

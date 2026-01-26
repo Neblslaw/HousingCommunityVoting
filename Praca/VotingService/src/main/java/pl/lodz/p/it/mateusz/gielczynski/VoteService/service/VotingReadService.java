@@ -39,7 +39,7 @@ public class VotingReadService {
     }
 
     public List<Voting> getVotingsByVoter(UUID voterId) {
-        return votingRepository.getVotingsByVotingGroups_Voters(voterId);
+        return votingRepository.getVotingsByVotingGroups_Voter(voterId);
     }
 
     public List<VotingResult> getVotingResults(UUID votingId) {

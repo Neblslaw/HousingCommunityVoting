@@ -1,6 +1,8 @@
 package pl.lodz.p.it.mateusz.gielczynski.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -14,6 +16,8 @@ import java.util.List;
 @Order(2)
 @ControllerAdvice
 class ApplicationExceptionHandler {
+
+    private static final Log log = LogFactory.getLog(ApplicationExceptionHandler.class);
 
     @ExceptionHandler(value = {ApplicationException.class})
     public ResponseEntity<String> handleException(ApplicationException e, HttpServletRequest request) {
@@ -40,6 +44,16 @@ class ApplicationExceptionHandler {
                 .status(HttpStatus.BAD_REQUEST)
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body(problemDetails);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<String> handleUnknownException(Exception exception, HttpServletRequest request) {
+        log.error("Unknown exception");
+        exception.printStackTrace();
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body("Internal server error");
     }
 
 //    @ExceptionHandler(ConstraintViolationException.class)

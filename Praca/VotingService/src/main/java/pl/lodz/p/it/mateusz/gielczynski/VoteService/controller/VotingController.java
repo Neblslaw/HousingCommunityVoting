@@ -9,7 +9,9 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VotingDTO;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.VotingResultDTO;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.mapper.VotingMapper;
+import pl.lodz.p.it.mateusz.gielczynski.VoteService.mapper.VotingResultMapper;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingReadService;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.service.VotingWriteService;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
@@ -75,5 +77,11 @@ public class VotingController {
     @PreAuthorize("hasRole('votings:manage')")
     public void deleteVoting(@PathVariable UUID id) throws ConflictException, NotFoundException {
         votingWriteService.deleteVoting(id);
+    }
+
+    @GetMapping("/{id}/results")
+    @PreAuthorize("hasRole('votings:read')")
+    public List<VotingResultDTO> getResults(@PathVariable UUID id) {
+        return VotingResultMapper.toDto(votingReadService.getVotingResults(id));
     }
 }
