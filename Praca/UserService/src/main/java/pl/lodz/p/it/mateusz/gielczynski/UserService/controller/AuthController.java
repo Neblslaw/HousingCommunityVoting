@@ -82,12 +82,12 @@ public class AuthController {
     }
 
     @PostMapping("/register/{inviteCode}")
-    @PreAuthorize("hasRole('accounts:invite')")
     public void Register(@RequestBody @Valid @Sensitive AccountCreateDto accountCreateDto, @PathVariable @Sensitive UUID inviteCode, @RequestHeader(HttpHeaders.ACCEPT_LANGUAGE) String language) throws BadRequestException {
         accountService.createAccount(accountCreateDto, inviteCode, language);
     }
 
     @GetMapping("/inviteCode")
+    @PreAuthorize("hasRole('accounts:invite')")
     public UUID generateInviteCode() {
         return accountService.generateInviteCode().getId();
     }

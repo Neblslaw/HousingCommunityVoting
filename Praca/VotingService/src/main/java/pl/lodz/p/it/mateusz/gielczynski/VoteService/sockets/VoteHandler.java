@@ -187,6 +187,10 @@ public class VoteHandler extends TextWebSocketHandler {
             return;
         }
         WebSocketSession session = votingSessions.get(votingId).getOwnerSession();
+        if (session == null) {
+            log.error("Tried to notify organizer that did not join voting");
+            return;
+        }
         if (!session.isOpen()) {
             log.error("Tried to notify organizer of inexistent voting");
             return;

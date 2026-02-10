@@ -67,8 +67,8 @@ class StartupService {
         roleRepository.saveAndFlush(notificationArchive);
 
         Group accManager = new Group("Accounts Manager", new HashSet<>(Set.of(accountsRead, accountsInvite, accountsArchive, groupsRead, groupsCreate, groupsDelete, groupsEdit, roleCreate, roleDelete, roleRead)), 1);
-        Group votingCreator = new Group("Voting Creator", new HashSet<>(Set.of(votingsReadAll, votingsManage, accountsRead, estateRead)), 1);
-        Group votingParticipant = new Group("Voting participant", new HashSet<>(Set.of(votingsParticipate, votingsRead)), 1);
+        Group votingCreator = new Group("Voting Creator", new HashSet<>(Set.of(votingsReadAll, votingsManage, accountsRead, estateRead, votingsRead)), 1);
+        Group votingParticipant = new Group("Voting participant", new HashSet<>(Set.of(votingsParticipate, votingsRead, votingsReadAll)), 1);
         Group estateManager = new Group("Estate Manager", new HashSet<>(Set.of(estateRead, estateManage, accountsRead)), 1);
         Group notificationsUser = new Group("Notifications Manager", new HashSet<>(Set.of(notificationArchive, notificationRead, notificationWrite)), 1);
 

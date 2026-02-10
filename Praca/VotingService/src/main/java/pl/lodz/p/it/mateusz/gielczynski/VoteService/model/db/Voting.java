@@ -26,8 +26,6 @@ public class Voting extends AbstractEntity {
     @Column(nullable = false)
     private UUID owner;
 
-    @Column(nullable = false)
-    private LocalDateTime plannedStartTime;
     private LocalDateTime startTime = null;
     private LocalDateTime endTime = null;
     private LocalDateTime lockTime = null;

@@ -7,6 +7,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -46,6 +47,15 @@ class ApplicationExceptionHandler {
                 .body(problemDetails);
     }
 
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<String> handleUnauthorized(AuthorizationDeniedException exception, HttpServletRequest request) {
+        log.error("Unauthorized");
+        return ResponseEntity
+                .status(HttpStatus.UNAUTHORIZED)
+                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
+                .body("Unauthorized");
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleUnknownException(Exception exception, HttpServletRequest request) {
         log.error("Unknown exception");
@@ -55,21 +65,4 @@ class ApplicationExceptionHandler {
                 .contentType(MediaType.APPLICATION_PROBLEM_JSON)
                 .body("Internal server error");
     }
-
-//    @ExceptionHandler(ConstraintViolationException.class)
-//    public ResponseEntity<ValidationProblemDetailsDto> handleValidationException(ConstraintViolationException exception, HttpServletRequest request) {
-//        List<InvalidParam> invalidParams = exception.getConstraintViolations().stream()
-//                .map(fieldError -> new InvalidParam(fieldError.getPropertyPath().toString(), fieldError.getMessage()))
-//                .toList();
-//
-//        ValidationProblemDetailsDto problemDetails = ValidationProblemDetailsDto.builder()
-//                .title("Validation failed")
-//                .invalidParams(invalidParams)
-//                .build();
-//
-//        return ResponseEntity
-//                .status(HttpStatus.BAD_REQUEST)
-//                .contentType(MediaType.APPLICATION_PROBLEM_JSON)
-//                .body(problemDetails);
-//    }
 }

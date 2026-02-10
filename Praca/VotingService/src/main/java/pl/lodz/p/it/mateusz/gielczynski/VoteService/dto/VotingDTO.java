@@ -1,6 +1,5 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.dto;
 
-import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Null;
@@ -16,7 +15,6 @@ public record VotingDTO(
         @NotEmpty @NotNull List<QuestionDTO> questions,
         @NotEmpty @NotNull List<VotingGroupDTO> votingGroups,
         @NotNull UUID owner,
-        @Future LocalDateTime plannedStartTime,
         @Null LocalDateTime startTime,
         @Null LocalDateTime endTime,
         @Null LocalDateTime lockTime,

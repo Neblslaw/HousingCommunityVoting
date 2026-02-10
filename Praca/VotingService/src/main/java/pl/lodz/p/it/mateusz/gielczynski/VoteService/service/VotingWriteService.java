@@ -61,7 +61,6 @@ public class VotingWriteService {
         oldVoting.setOwner(voting.getOwner());
         oldVoting.getQuestions().clear();
         oldVoting.getQuestions().addAll(voting.getQuestions());
-        oldVoting.setPlannedStartTime(voting.getPlannedStartTime());
         oldVoting.getVotingGroups().clear();
         oldVoting.getVotingGroups().addAll(voting.getVotingGroups());
 
@@ -121,13 +120,14 @@ public class VotingWriteService {
         Question question = questionRepository.findById(voteDTO.questionId()).orElseThrow(() -> new NotFoundException(i18n.QUESTION_NOT_FOUND));
         Voting voting = votingRepository.findById(voteDTO.votingId()).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
 
-        List<VotingGroup> votingGroups = votingGroupRepository.findAllByVoters(List.of(voteDTO.userId()));
-        for (VotingGroup votingGroup : votingGroups) {
-            Vote vote = new Vote(
-                    voting, question, votingGroup, voteDTO.answer()
-            );
-            voteRepository.saveAndFlush(vote);
-        }
+        voting.getVotingGroups().stream().filter(votingGroup -> votingGroup.getVoters().contains(voteDTO.userId())).forEach(
+                votingGroup -> {
+                    Vote vote = new Vote(
+                            voting, question, votingGroup, voteDTO.answer()
+                    );
+                    voteRepository.saveAndFlush(vote);
+                }
+        );
         voteAbilityRepository.deleteByUserAndQuestion(voteDTO.userId(), voteDTO.questionId());
         question.setModifiedAt(LocalDateTime.now());
         questionRepository.saveAndFlush(question);
@@ -149,6 +149,7 @@ public class VotingWriteService {
         }
         voting.setEndTime(LocalDateTime.now());
 
+        votingRepository.saveAndFlush(voting);
         List<Vote> votes = voteRepository.findAllByVoting_Id(id);
 
 

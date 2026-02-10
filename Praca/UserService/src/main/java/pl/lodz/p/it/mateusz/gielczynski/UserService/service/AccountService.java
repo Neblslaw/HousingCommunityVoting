@@ -14,7 +14,6 @@ import pl.lodz.p.it.mateusz.gielczynski.UserService.email.EmailService;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.jwt.Token;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.jwt.TokenProvider;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
-import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.InviteCode;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.model.PasswordResetToken;
 import pl.lodz.p.it.mateusz.gielczynski.UserService.repository.AccountRepository;
@@ -115,12 +114,8 @@ public class AccountService {
         account.setPasswordHash(passwordEncoder.encode(accountCreateDto.password()));
         account.setLanguage(language);
 
-        Group group = new Group(account.getLogin());
-        account.getGroups().add(group);
-
         try {
             accountRepository.saveAndFlush(account);
-            groupRepository.saveAndFlush(group);
         } catch (DataIntegrityViolationException e) { //todo check if its only possible violation
             throw new BadRequestException(i18n.LOGIN_IN_USE);
         }
