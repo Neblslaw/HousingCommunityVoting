@@ -26,7 +26,10 @@
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
             <artifactId>Loggers</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.projectlombok</groupId>

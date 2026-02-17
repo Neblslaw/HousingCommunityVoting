@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-5.0.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1771355362996-1" author="mateusz gielczynski">
+        <createTable tableName="building">
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="building_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355362996-2" author="mateusz gielczynski">
+        <createTable tableName="building_floors">
+            <column name="building_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="floors_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355362996-3" author="mateusz gielczynski">
+        <createTable tableName="flat">
+            <column name="flat_order" type="INT"/>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="flat_pkey"/>
+            </column>
+            <column name="number" type="VARCHAR(255)"/>
+            <column name="inhabitants" type="UUID[]"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355362996-4" author="mateusz gielczynski">
+        <createTable tableName="floor">
+            <column name="number" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="floor_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355362996-5" author="mateusz gielczynski">
+        <createTable tableName="floor_flats">
+            <column name="flats_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="floor_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355362996-6" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="floors_id" constraintName="building_floors_floors_id_key"
+                             tableName="building_floors"/>
+    </changeSet>
+    <changeSet id="1771355362996-7" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="flats_id" constraintName="floor_flats_flats_id_key" tableName="floor_flats"/>
+    </changeSet>
+    <changeSet id="1771355362996-8" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="building_id" baseTableName="building_floors"
+                                 constraintName="fkb56t16qxbyghbb2nq89n6s70g" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="building"/>
+    </changeSet>
+    <changeSet id="1771355362996-9" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="floor_id" baseTableName="floor_flats"
+                                 constraintName="fkd7u54ejr2lvbuxxspq1ujbl7y" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="floor"/>
+    </changeSet>
+    <changeSet id="1771355362996-10" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="flats_id" baseTableName="floor_flats"
+                                 constraintName="fkdp1f5rbk0yr6mdac0eaw7uedr" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="flat"/>
+    </changeSet>
+    <changeSet id="1771355362996-11" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="floors_id" baseTableName="building_floors"
+                                 constraintName="fkejd0fpbs4kgg3ln133eiojy9h" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="floor"/>
+    </changeSet>
+
+</databaseChangeLog>

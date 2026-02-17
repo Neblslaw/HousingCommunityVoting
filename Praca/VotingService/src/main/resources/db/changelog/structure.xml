@@ -1,0 +1,238 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-5.0.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1771354976195-1" author="mateusz gielczynski">
+        <createTable tableName="question">
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="question_pkey"/>
+            </column>
+            <column name="question" type="VARCHAR(255)"/>
+            <column name="answers" type="VARCHAR(255) []"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-2" author="mateusz gielczynski">
+        <createTable tableName="vote">
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="group_id" type="uuid"/>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vote_pkey"/>
+            </column>
+            <column name="question_id" type="uuid"/>
+            <column name="voting_id" type="uuid"/>
+            <column name="answer" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-3" author="mateusz gielczynski">
+        <createTable tableName="vote_ability">
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="vote_ability_pkey"/>
+            </column>
+            <column name="question" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="user_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voting_id" type="uuid"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-4" author="mateusz gielczynski">
+        <createTable tableName="voting">
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="end_time" type="timestamp"/>
+            <column name="lock_time" type="timestamp"/>
+            <column name="modified_at" type="timestamp"/>
+            <column name="start_time" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="voting_pkey"/>
+            </column>
+            <column name="owner" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="name" type="VARCHAR(300)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-5" author="mateusz gielczynski">
+        <createTable tableName="voting_group">
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="voting_group_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voters" type="UUID[]"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-6" author="mateusz gielczynski">
+        <createTable tableName="voting_questions">
+            <column name="questions_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voting_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-7" author="mateusz gielczynski">
+        <createTable tableName="voting_result">
+            <column name="vote_count" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="voting_result_pkey"/>
+            </column>
+            <column name="question_id" type="uuid"/>
+            <column name="voting_id" type="uuid"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-8" author="mateusz gielczynski">
+        <createTable tableName="voting_result_option">
+            <column name="count" type="FLOAT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="voting_result_option_pkey"/>
+            </column>
+            <column name="option" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-9" author="mateusz gielczynski">
+        <createTable tableName="voting_result_results">
+            <column name="results_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voting_result_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-10" author="mateusz gielczynski">
+        <createTable tableName="voting_voting_groups">
+            <column name="voting_groups_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+            <column name="voting_id" type="uuid">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771354976195-11" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="questions_id" constraintName="voting_questions_questions_id_key"
+                             tableName="voting_questions"/>
+    </changeSet>
+    <changeSet id="1771354976195-12" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="question_id" constraintName="voting_result_question_id_key"
+                             tableName="voting_result"/>
+    </changeSet>
+    <changeSet id="1771354976195-13" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="results_id" constraintName="voting_result_results_results_id_key"
+                             tableName="voting_result_results"/>
+    </changeSet>
+    <changeSet id="1771354976195-14" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="voting_groups_id" constraintName="voting_voting_groups_voting_groups_id_key"
+                             tableName="voting_voting_groups"/>
+    </changeSet>
+    <changeSet id="1771354976195-15" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="voting_id" baseTableName="vote_ability"
+                                 constraintName="fk3tf2wmmv5gj45nc1kqokuetcy" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting"/>
+    </changeSet>
+    <changeSet id="1771354976195-16" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="question_id" baseTableName="vote"
+                                 constraintName="fk4n24tk4fshw5eaoiqvjvi3vj0" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="question"/>
+    </changeSet>
+    <changeSet id="1771354976195-17" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="voting_id" baseTableName="voting_voting_groups"
+                                 constraintName="fk69ypadty7k2tkqwc4f5m2dfxh" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting"/>
+    </changeSet>
+    <changeSet id="1771354976195-18" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="voting_id" baseTableName="vote"
+                                 constraintName="fk81w29sp6dc6dwe9wpynsst9nf" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting"/>
+    </changeSet>
+    <changeSet id="1771354976195-19" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="results_id" baseTableName="voting_result_results"
+                                 constraintName="fkajwdh1h6j5ns2je7gb26mf9m3" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting_result_option"/>
+    </changeSet>
+    <changeSet id="1771354976195-20" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="questions_id" baseTableName="voting_questions"
+                                 constraintName="fkcwlernv25h0aioqgbowumn3n9" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="question"/>
+    </changeSet>
+    <changeSet id="1771354976195-21" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="vote"
+                                 constraintName="fkijm142mvqfayci7s1u1f00md9" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting_group"/>
+    </changeSet>
+    <changeSet id="1771354976195-22" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="voting_id" baseTableName="voting_questions"
+                                 constraintName="fkl39bxi0y1jhm1spq0mi2nvxld" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting"/>
+    </changeSet>
+    <changeSet id="1771354976195-23" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="question_id" baseTableName="voting_result"
+                                 constraintName="fkm9f1ld9re0fo8wvpsqe0krrn" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="question"/>
+    </changeSet>
+    <changeSet id="1771354976195-24" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="voting_result_id" baseTableName="voting_result_results"
+                                 constraintName="fkqpyk71geb31phkkpme2rpywrv" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting_result"/>
+    </changeSet>
+    <changeSet id="1771354976195-25" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="voting_id" baseTableName="voting_result"
+                                 constraintName="fksodq7bbt0299dsh2cq04npihc" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting"/>
+    </changeSet>
+    <changeSet id="1771354976195-26" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="voting_groups_id" baseTableName="voting_voting_groups"
+                                 constraintName="fktnj6871ky5o2eg5rhr952chny" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="voting_group"/>
+    </changeSet>
+
+</databaseChangeLog>

@@ -46,6 +46,10 @@
             <optional>true</optional>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-liquibase</artifactId>
+        </dependency>
+        <dependency>
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
             <artifactId>VotingEngine</artifactId>
         </dependency>

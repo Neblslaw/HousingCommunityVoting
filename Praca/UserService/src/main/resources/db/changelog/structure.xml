@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-5.0.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1771355525221-1" author="mateusz gielczynski">
+        <createTable tableName="account">
+            <column defaultValueBoolean="false" name="archived" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column defaultValueBoolean="false" name="verified" type="BOOLEAN">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="account_pkey"/>
+            </column>
+            <column name="email" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="first_name" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="language" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_name" type="VARCHAR(30)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="login" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="password_hash" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355525221-2" author="mateusz gielczynski">
+        <createTable tableName="account_groups">
+            <column name="account_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="account_groups_pkey"/>
+            </column>
+            <column name="groups_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="account_groups_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355525221-3" author="mateusz gielczynski">
+        <createTable tableName="invite_code">
+            <column name="expires_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="invite_code_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355525221-4" author="mateusz gielczynski">
+        <createTable tableName="password_reset_token">
+            <column name="expires_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="account_id" type="uuid"/>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="password_reset_token_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355525221-5" author="mateusz gielczynski">
+        <createTable tableName="role">
+            <column name="groups_count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="role_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355525221-6" author="mateusz gielczynski">
+        <createTable tableName="user_group">
+            <column name="user_count" type="INT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_at" type="timestamp">
+                <constraints nullable="false"/>
+            </column>
+            <column name="modified_at" type="timestamp"/>
+            <column name="version" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_group_pkey"/>
+            </column>
+            <column name="name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355525221-7" author="mateusz gielczynski">
+        <createTable tableName="user_group_roles">
+            <column name="group_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_group_roles_pkey"/>
+            </column>
+            <column name="roles_id" type="uuid">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="user_group_roles_pkey"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1771355525221-8" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="email" constraintName="account_email_key" tableName="account"/>
+    </changeSet>
+    <changeSet id="1771355525221-9" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="login" constraintName="account_login_key" tableName="account"/>
+    </changeSet>
+    <changeSet id="1771355525221-10" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="account_id" constraintName="password_reset_token_account_id_key"
+                             tableName="password_reset_token"/>
+    </changeSet>
+    <changeSet id="1771355525221-11" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="name" constraintName="role_name_key" tableName="role"/>
+    </changeSet>
+    <changeSet id="1771355525221-12" author="mateusz gielczynski">
+        <addUniqueConstraint columnNames="name" constraintName="user_group_name_key" tableName="user_group"/>
+    </changeSet>
+    <changeSet id="1771355525221-13" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="groups_id" baseTableName="account_groups"
+                                 constraintName="fk81if708n2p6t9uvs4q7fqo8op" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="user_group"/>
+    </changeSet>
+    <changeSet id="1771355525221-14" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="roles_id" baseTableName="user_group_roles"
+                                 constraintName="fk99vs3uto0r291mfbq6028xib1" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="role"/>
+    </changeSet>
+    <changeSet id="1771355525221-15" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="group_id" baseTableName="user_group_roles"
+                                 constraintName="fkbvmyy0gpb91a6ts02d977f7ru" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="user_group"/>
+    </changeSet>
+    <changeSet id="1771355525221-16" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="password_reset_token"
+                                 constraintName="fkipbgvnxxexjrflo4n6xli458f" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+    <changeSet id="1771355525221-17" author="mateusz gielczynski">
+        <addForeignKeyConstraint baseColumnNames="account_id" baseTableName="account_groups"
+                                 constraintName="fkq08qg0rrhxr0wvdaoa4j1iqt5" onDelete="NO ACTION"
+                                 referencedColumnNames="id" referencedTableName="account"/>
+    </changeSet>
+
+</databaseChangeLog>
