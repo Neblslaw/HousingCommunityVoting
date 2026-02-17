@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.6</version>
+        <version>4.0.2</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
@@ -21,10 +21,10 @@
     </developers>
     <modules>
         <module>Exceptions</module>
-        <module>UserService</module>
-        <module>SecurityClient</module>
         <module>Loggers</module>
         <module>VotingEngine</module>
+        <module>SecurityClient</module>
+        <module>UserService</module>
         <module>VotingService</module>
         <module>EstateService</module>
         <module>NotificationService</module>
@@ -38,6 +38,34 @@
     <properties>
         <java.version>25</java.version>
     </properties>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
+                <artifactId>Exceptions</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
+                <artifactId>Loggers</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
+                <artifactId>VotingEngine</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+            <dependency>
+                <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
+                <artifactId>SecurityClient</artifactId>
+                <version>0.0.1-SNAPSHOT</version>
+                <scope>compile</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 
 </project>

@@ -1,7 +1,7 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.retry.annotation.Retryable;
+import org.springframework.resilience.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,7 +45,7 @@ public class VotingWriteService {
     }
 
     @Retryable(
-            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+            includes = {org.springframework.dao.OptimisticLockingFailureException.class}
     )
     public Voting updateVoting(UUID id, Voting voting) throws ConflictException, NotFoundException {
         Voting oldVoting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
@@ -68,7 +68,7 @@ public class VotingWriteService {
     }
 
     @Retryable(
-            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+            includes = {org.springframework.dao.OptimisticLockingFailureException.class}
     )
     public void deleteVoting(UUID id) throws NotFoundException, ConflictException {
         Voting voting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
@@ -82,7 +82,7 @@ public class VotingWriteService {
     }
 
     @Retryable(
-            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+            includes = {org.springframework.dao.OptimisticLockingFailureException.class}
     )
     public LocalDateTime startVoting(UUID id) throws NotFoundException, ConflictException {
         Voting voting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));
@@ -109,8 +109,8 @@ public class VotingWriteService {
     }
 
     @Retryable(
-            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class},
-            maxAttempts = 15
+            includes = {org.springframework.dao.OptimisticLockingFailureException.class},
+            maxRetries = 15
     )
     public void vote(@Sensitive VoteDTO voteDTO) throws NotFoundException {
         if (!voteAbilityRepository.existsByUserAndQuestion(voteDTO.userId(), voteDTO.questionId())) {
@@ -134,7 +134,7 @@ public class VotingWriteService {
     }
 
     @Retryable(
-            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+            includes = {org.springframework.dao.OptimisticLockingFailureException.class}
     )
     public void endVoting(UUID id) throws NotFoundException, ConflictException {
         voteAbilityRepository.deleteAllByVotingId(id);
@@ -186,7 +186,7 @@ public class VotingWriteService {
     }
 
     @Retryable(
-            retryFor = {org.springframework.dao.OptimisticLockingFailureException.class}
+            includes = {org.springframework.dao.OptimisticLockingFailureException.class}
     )
     public void lockVoting(UUID id) throws ConflictException, NotFoundException {
         Voting oldVoting = votingRepository.findById(id).orElseThrow(() -> new NotFoundException(i18n.VOTING_NOT_FOUND));

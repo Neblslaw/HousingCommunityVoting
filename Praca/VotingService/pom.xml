@@ -22,15 +22,14 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.springframework.retry</groupId>
-            <artifactId>spring-retry</artifactId>
-            <scope>compile</scope>
-        </dependency>
+        <!--        <dependency>-->
+        <!--            <groupId>org.springframework.retry</groupId>-->
+        <!--            <artifactId>spring-retry</artifactId>-->
+        <!--            <scope>compile</scope>-->
+        <!--        </dependency>-->
         <dependency>
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
             <artifactId>Loggers</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
@@ -49,14 +48,10 @@
         <dependency>
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
             <artifactId>VotingEngine</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
             <artifactId>SecurityClient</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -74,20 +69,6 @@
         <dependency>
             <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
             <artifactId>Exceptions</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
-            <artifactId>Exceptions</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
-            <artifactId>Loggers</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 
