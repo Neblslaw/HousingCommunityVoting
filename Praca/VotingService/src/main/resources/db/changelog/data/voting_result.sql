@@ -1,0 +1,2 @@
+INSERT INTO public.voting_result (vote_count, id, question_id, voting_id) VALUES (6, '8121b53d-ffa9-4699-bc60-786926337976', 'f61e49da-ab92-4de8-a2e2-bde25ca518f3', '41dd2f5f-356e-4578-aa20-6626f074a486');
+INSERT INTO public.voting_result (vote_count, id, question_id, voting_id) VALUES (6, 'f5bd1b85-33cf-4a23-9766-59f255098813', 'f5affa29-19fd-4c11-bdae-44e8b008dc38', '41dd2f5f-356e-4578-aa20-6626f074a486');

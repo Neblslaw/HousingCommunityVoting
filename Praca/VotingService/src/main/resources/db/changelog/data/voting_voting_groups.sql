@@ -1,0 +1,9 @@
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('9cc2a3a6-7d24-4505-b966-542731f18b00', '41dd2f5f-356e-4578-aa20-6626f074a486');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('82f2f190-4351-49e9-accb-804b9800baaf', '41dd2f5f-356e-4578-aa20-6626f074a486');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('c427ca6c-ff2d-4987-b811-c485b105669d', '41dd2f5f-356e-4578-aa20-6626f074a486');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('fbc8bb6b-91c8-409e-872b-a52607140426', '41dd2f5f-356e-4578-aa20-6626f074a486');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('4a140a42-77f3-4553-88f1-f76f151080ea', '41dd2f5f-356e-4578-aa20-6626f074a486');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('ef1cfe12-7632-450a-afff-9d7df5563f12', '41dd2f5f-356e-4578-aa20-6626f074a486');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('5113f0e9-9cd4-469e-a044-d24e15687f8f', 'faf0c727-9e65-4776-b841-e28cc93bac8a');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('57a90ae9-475d-4334-9966-073c79ea9492', 'faf0c727-9e65-4776-b841-e28cc93bac8a');
+INSERT INTO public.voting_voting_groups (voting_groups_id, voting_id) VALUES ('fccd883f-5864-415a-b710-1538c6542f2f', 'faf0c727-9e65-4776-b841-e28cc93bac8a');

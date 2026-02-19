@@ -1,4 +1,7 @@
 databaseChangeLog:
   - include:
       file: classpath:db/changelog/structure.xml
+  - include:
+      file: classpath:db/changelog/data/notification.sql
+
 

@@ -67,10 +67,10 @@ class StartupService {
         roleRepository.saveAndFlush(notificationArchive);
 
         Group accManager = new Group("Accounts Manager", new HashSet<>(Set.of(accountsRead, accountsInvite, accountsArchive, groupsRead, groupsCreate, groupsDelete, groupsEdit, roleCreate, roleDelete, roleRead)), 1);
-        Group votingCreator = new Group("Voting Creator", new HashSet<>(Set.of(votingsReadAll, votingsManage, accountsRead, estateRead, votingsRead)), 1);
-        Group votingParticipant = new Group("Voting participant", new HashSet<>(Set.of(votingsParticipate, votingsRead, votingsReadAll)), 1);
-        Group estateManager = new Group("Estate Manager", new HashSet<>(Set.of(estateRead, estateManage, accountsRead)), 1);
-        Group notificationsUser = new Group("Notifications Manager", new HashSet<>(Set.of(notificationArchive, notificationRead, notificationWrite)), 1);
+        Group votingCreator = new Group("Voting Creator", new HashSet<>(Set.of(votingsReadAll, votingsManage, accountsRead, estateRead, votingsRead)), 0);
+        Group votingParticipant = new Group("Voting participant", new HashSet<>(Set.of(votingsParticipate, votingsRead, votingsReadAll)), 0);
+        Group estateManager = new Group("Estate Manager", new HashSet<>(Set.of(estateRead, estateManage, accountsRead)), 0);
+        Group notificationsUser = new Group("Notifications Manager", new HashSet<>(Set.of(notificationArchive, notificationRead, notificationWrite)), 0);
 
 
         groupRepository.saveAndFlush(accManager);
@@ -87,26 +87,9 @@ class StartupService {
         account.setPasswordHash(passwordEncoder.encode("ZAQ!2wsx"));
         account.setLastName("Mateusz");
         account.setEmail("cos@cos.pl");
-        Group zbychGroup = new Group("zbych");
-        zbychGroup.getRoles().add(new Role("Zbych", 1));
-        account.getGroups().add(zbychGroup);
         account.getGroups().add(accManager);
         account.getGroups().add(notificationsUser);
         accountRepository.saveAndFlush(account);
-        groupRepository.saveAndFlush(zbychGroup);
-
-        Account account2 = new Account();
-        account2.setLanguage("pl");
-        account2.setFirstName("Mateusz");
-        account2.setLogin("zbych2");
-        account2.setPasswordHash(passwordEncoder.encode("ZAQ!2wsx"));
-        account2.setLastName("Matesusz");
-        account2.setEmail("cos@coss.pl");
-        Group zbychGroup2 = new Group("zbych2");
-        zbychGroup2.getRoles().add(new Role("Zbych2", 1));
-        account2.getGroups().add(zbychGroup2);
-        accountRepository.saveAndFlush(account2);
-        groupRepository.saveAndFlush(zbychGroup2);
     }
 
 }

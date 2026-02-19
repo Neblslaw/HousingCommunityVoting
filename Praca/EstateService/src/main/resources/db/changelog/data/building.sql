@@ -1,0 +1,1 @@
+INSERT INTO public.building (created_at, modified_at, version, id, name) VALUES ('2026-02-19 19:00:52.389154', '2026-02-19 19:00:52.389154', 0, '60e2a1de-168a-4359-8606-d56fc2c2141d', 'Mieszkalna 15');

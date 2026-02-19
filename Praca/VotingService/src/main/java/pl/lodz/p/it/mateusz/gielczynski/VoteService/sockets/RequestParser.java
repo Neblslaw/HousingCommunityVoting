@@ -1,6 +1,5 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.sockets;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import pl.lodz.p.it.mateusz.gielczynski.VoteService.dto.request.EndVoteRequestBody;
@@ -26,25 +25,25 @@ public class RequestParser {
         }
     }
 
-    public EndVoteRequestBody parseEndVoteRequest(JsonNode requestBody) throws BadRequestException {
+    public EndVoteRequestBody parseEndVoteRequest(Object requestBody) throws BadRequestException {
         try {
-            return objectMapper.readValue(requestBody.toString(), EndVoteRequestBody.class);
+            return objectMapper.convertValue(requestBody, EndVoteRequestBody.class);
         } catch (Exception e) {
             throw new BadRequestException(i18n.CANNOT_PARSE_REQUEST_BODY);
         }
     }
 
-    public StartVoteRequestBody parseStartVoteRequest(JsonNode requestBody) throws BadRequestException {
+    public StartVoteRequestBody parseStartVoteRequest(Object requestBody) throws BadRequestException {
         try {
-            return objectMapper.readValue(requestBody.toString(), StartVoteRequestBody.class);
+            return objectMapper.convertValue(requestBody, StartVoteRequestBody.class);
         } catch (Exception e) {
             throw new BadRequestException(i18n.CANNOT_PARSE_REQUEST_BODY);
         }
     }
 
-    public VoteRequestBody parseVoteRequest(JsonNode requestBody) throws BadRequestException {
+    public VoteRequestBody parseVoteRequest(Object requestBody) throws BadRequestException {
         try {
-            return objectMapper.readValue(requestBody.toString(), VoteRequestBody.class);
+            return objectMapper.convertValue(requestBody, VoteRequestBody.class);
         } catch (Exception e) {
             throw new BadRequestException(i18n.CANNOT_PARSE_REQUEST_BODY);
         }

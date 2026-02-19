@@ -1,4 +1,13 @@
 databaseChangeLog:
   - include:
       file: classpath:db/changelog/structure.xml
-
+  - include:
+      file: classpath:db/changelog/data/account.sql
+  - include:
+      file: classpath:db/changelog/data/role.sql
+  - include:
+      file: classpath:db/changelog/data/user_group.sql
+  - include:
+      file: classpath:db/changelog/data/account_groups.sql
+  - include:
+      file: classpath:db/changelog/data/user_group_roles.sql

@@ -1,4 +1,14 @@
 databaseChangeLog:
   - include:
       file: classpath:db/changelog/structure.xml
+  - include:
+      file: classpath:db/changelog/data/building.sql
+  - include:
+      file: classpath:db/changelog/data/flat.sql
+  - include:
+      file: classpath:db/changelog/data/floor.sql
+  - include:
+      file: classpath:db/changelog/data/building_floors.sql
+  - include:
+      file: classpath:db/changelog/data/floor_flats.sql
 

@@ -1,4 +1,19 @@
 databaseChangeLog:
   - include:
       file: classpath:db/changelog/structure.xml
-
+  - include:
+      file: classpath:db/changelog/data/voting.sql
+  - include:
+      file: classpath:db/changelog/data/question.sql
+  - include:
+      file: classpath:db/changelog/data/voting_group.sql
+  - include:
+      file: classpath:db/changelog/data/voting_result.sql
+  - include:
+      file: classpath:db/changelog/data/voting_result_option.sql
+  - include:
+      file: classpath:db/changelog/data/voting_questions.sql
+  - include:
+      file: classpath:db/changelog/data/voting_result_results.sql
+  - include:
+      file: classpath:db/changelog/data/voting_voting_groups.sql

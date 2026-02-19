@@ -1,6 +1,5 @@
 package pl.lodz.p.it.mateusz.gielczynski.VoteService.sockets;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -86,7 +85,7 @@ public class VoteHandler extends TextWebSocketHandler {
 
     }
 
-    private void handleVote(JsonNode body, WebSocketSession session) throws NotFoundException, BadRequestException {
+    private void handleVote(Object body, WebSocketSession session) throws NotFoundException, BadRequestException {
         VoteRequestBody req = requestParser.parseVoteRequest(body);
         JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
         UUID votingId = (UUID) session.getAttributes().get("ROOM_ID");
@@ -96,7 +95,7 @@ public class VoteHandler extends TextWebSocketHandler {
         notifyOrganizer(req.votingId(), eventSerializer.serialize(new UserVotedEvent(req.votingId())));
     }
 
-    private void handleStartVoting(JsonNode body, WebSocketSession session) throws NotFoundException, BadRequestException, ConflictException {
+    private void handleStartVoting(Object body, WebSocketSession session) throws NotFoundException, BadRequestException, ConflictException {
         StartVoteRequestBody req = requestParser.parseStartVoteRequest(body);
         JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
 
@@ -109,7 +108,7 @@ public class VoteHandler extends TextWebSocketHandler {
     }
 
 
-    private void handleEndVoting(JsonNode body, WebSocketSession session) throws NotFoundException, BadRequestException, ConflictException {
+    private void handleEndVoting(Object body, WebSocketSession session) throws NotFoundException, BadRequestException, ConflictException {
         EndVoteRequestBody req = requestParser.parseEndVoteRequest(body);
         JwtAuth jwtAuth = (JwtAuth) session.getAttributes().get("AUTH");
 

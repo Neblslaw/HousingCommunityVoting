@@ -13,7 +13,7 @@ public class TempAccountGenerator {
 
     @PostConstruct
     public void init() {
-        startupService.generateAccounts();
+//        startupService.generateAccounts();
     }
 
 }
