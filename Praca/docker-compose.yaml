@@ -38,5 +38,16 @@ services:
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appdb
 
+  voting-front:
+    image: voting-front
+    ports:
+      - "5173:5173"
+    environment:
+      API_TARGET: 'http://user-service:8080'
+      VOTING_TARGET: 'http://voting-service:9090'
+      ESTATE_TARGET: 'http://estate-service:9191'
+      NOTIFICATION_TARGET: 'http://notification-service:9292'
+      VOTES_TARGET: 'ws://voting-service:9090'
+
 volumes:
   db_data:
