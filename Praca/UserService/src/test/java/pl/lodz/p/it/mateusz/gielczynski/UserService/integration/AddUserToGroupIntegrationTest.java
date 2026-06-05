@@ -18,6 +18,7 @@ class AddUserToGroupIntegrationTest extends IntegrationTestBase {
 
     private static final UUID VOTER1_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
     private static final UUID ESTATE_MANAGER_GROUP_ID = UUID.fromString("32023459-8806-41af-aef0-bd0fb0592b0a");
+    private static final UUID NON_EXISTING_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
 
     @Test
     @WithMockUser(authorities = "ROLE_groups:edit")
@@ -33,5 +34,39 @@ class AddUserToGroupIntegrationTest extends IntegrationTestBase {
                 .extracting(Group::getId)
                 .contains(ESTATE_MANAGER_GROUP_ID);
     }
-}
 
+    @Test
+    @WithMockUser(authorities = "ROLE_groups:edit")
+    void shouldReturnNotFoundWhenGroupDoesNotExist() throws Exception {
+        mockMvc.perform(post("/groups/{groupId}/users", NON_EXISTING_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(VOTER1_ID))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_groups:edit")
+    void shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
+        mockMvc.perform(post("/groups/{groupId}/users", ESTATE_MANAGER_GROUP_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(NON_EXISTING_ID))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_other:role")
+    void shouldReturnUnauthorizedWhenAuthenticatedButLacksRequiredRole() throws Exception {
+        mockMvc.perform(post("/groups/{groupId}/users", ESTATE_MANAGER_GROUP_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(VOTER1_ID))))
+                .andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void shouldReturnUnauthorizedWhenNotAuthenticated() throws Exception {
+        mockMvc.perform(post("/groups/{groupId}/users", ESTATE_MANAGER_GROUP_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(VOTER1_ID))))
+                .andExpect(status().isUnauthorized());
+    }
+}

@@ -1,0 +1,64 @@
+package pl.lodz.p.it.mateusz.gielczynski.UserService.integration;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Account;
+import pl.lodz.p.it.mateusz.gielczynski.UserService.model.Group;
+
+import java.util.List;
+import java.util.UUID;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+
+class RemoveUsersFromGroupIntegrationTest extends IntegrationTestBase {
+
+    private static final UUID VOTER1_ID = UUID.fromString("00000000-0000-0000-0000-000000000001");
+    private static final UUID VOTING_PARTICIPANT_GROUP_ID = UUID.fromString("82124b25-08ce-4c8f-ac34-028d86c87eaa");
+    private static final UUID NON_EXISTING_ID = UUID.fromString("ffffffff-ffff-ffff-ffff-ffffffffffff");
+
+    @Test
+    @WithMockUser(authorities = "ROLE_groups:edit")
+    void shouldRemoveUserFromGroup() throws Exception {
+        mockMvc.perform(delete("/groups/{groupId}/users", VOTING_PARTICIPANT_GROUP_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(VOTER1_ID))))
+                .andExpect(status().isOk());
+
+        Account account = testDbHelper.findAccount(VOTER1_ID).orElseThrow();
+
+        assertThat(account.getGroups())
+                .extracting(Group::getId)
+                .doesNotContain(VOTING_PARTICIPANT_GROUP_ID);
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_groups:edit")
+    void shouldReturnNotFoundWhenGroupDoesNotExist() throws Exception {
+        mockMvc.perform(delete("/groups/{groupId}/users", NON_EXISTING_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(VOTER1_ID))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_groups:edit")
+    void shouldReturnNotFoundWhenUserDoesNotExist() throws Exception {
+        mockMvc.perform(delete("/groups/{groupId}/users", VOTING_PARTICIPANT_GROUP_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(NON_EXISTING_ID))))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    @WithMockUser(authorities = "ROLE_other:role")
+    void shouldReturnUnauthorizedWhenAuthenticatedButLacksRequiredRole() throws Exception {
+        mockMvc.perform(delete("/groups/{groupId}/users", VOTING_PARTICIPANT_GROUP_ID)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(List.of(VOTER1_ID))))
+                .andExpect(status().isUnauthorized());
+    }
+}

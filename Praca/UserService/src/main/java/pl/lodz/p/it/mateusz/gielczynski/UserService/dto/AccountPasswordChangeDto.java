@@ -7,7 +7,7 @@ import jakarta.validation.constraints.Size;
 import java.util.UUID;
 
 public record AccountPasswordChangeDto(
-        @NotNull @NotBlank UUID resetCode,
+        @NotNull UUID resetCode,
         @NotNull @NotBlank @Size(min = 8, max = 64) String newPassword
 ) {
 }

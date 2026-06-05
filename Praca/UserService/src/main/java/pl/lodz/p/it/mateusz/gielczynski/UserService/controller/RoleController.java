@@ -28,13 +28,13 @@ class RoleController {
 
     @PostMapping
     @PreAuthorize("hasRole('role:create')")
-    public RoleDto createRole(RoleCreateDto roleCreateDto) throws BadRequestException {
+    public RoleDto createRole(@RequestBody RoleCreateDto roleCreateDto) throws BadRequestException {
         return RoleMapper.toDto(roleWriteService.createRole(roleCreateDto.name()));
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('role:delete')")
-    public void deleteRole(UUID id) {
+    public void deleteRole(@PathVariable UUID id) {
         roleWriteService.deleteRole(id);
     }
 
