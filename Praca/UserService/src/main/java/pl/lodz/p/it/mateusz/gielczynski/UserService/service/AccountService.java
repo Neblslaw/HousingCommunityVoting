@@ -24,6 +24,7 @@ import pl.lodz.p.it.mateusz.gielczynski.exceptions.BadRequestException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.InternalServerErrorException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
 import pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged;
+import pl.lodz.p.it.mateusz.gielczynski.logger.Sensitive;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -121,7 +122,8 @@ public class AccountService {
         }
     }
 
-    public Token login(String login, String password) throws BadRequestException {
+    @Sensitive
+    public Token login(String login, @Sensitive String password) throws BadRequestException {
         Account account = accountRepository.findAccountByLogin(login).orElseThrow(() -> new BadRequestException(i18n.CREDENTIALS_DO_NOT_MATCH));
         if (passwordEncoder.matches(password, account.getPasswordHash())) {
             return tokenProvider.generateToken(account.getId(), account.getLogin(), account.getRoles());

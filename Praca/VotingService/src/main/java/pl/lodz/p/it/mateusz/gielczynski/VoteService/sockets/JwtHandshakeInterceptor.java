@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.VoteService.sockets;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -19,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class JwtHandshakeInterceptor implements HandshakeInterceptor {
@@ -57,6 +59,7 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
 
             return true;
         } catch (Exception e) {
+            log.error(e.getMessage());
             return false;
         }
     }
@@ -67,6 +70,11 @@ public class JwtHandshakeInterceptor implements HandshakeInterceptor {
     }
 
     private String resolveToken(HttpServletRequest request) {
+        String token = request.getParameter("token");
+        if (token != null) {
+            return token;
+        }
+
         String header = request.getHeader("Authorization");
         if (header != null && header.startsWith("Bearer ")) {
             return header.substring(7);

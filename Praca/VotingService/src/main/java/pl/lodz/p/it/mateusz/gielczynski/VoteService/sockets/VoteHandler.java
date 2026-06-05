@@ -26,10 +26,10 @@ import pl.lodz.p.it.mateusz.gielczynski.exceptions.ConflictException;
 import pl.lodz.p.it.mateusz.gielczynski.exceptions.NotFoundException;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Slf4j
 @Component
@@ -40,7 +40,7 @@ public class VoteHandler extends TextWebSocketHandler {
     private final VotingWriteService votingWriteService;
     private final RequestParser requestParser;
     private final EventSerializer eventSerializer;
-    Map<UUID, VotingSession> votingSessions = new HashMap<>();
+    Map<UUID, VotingSession> votingSessions = new ConcurrentHashMap<>();
 
     @Override
     public void afterConnectionEstablished(@NonNull WebSocketSession session) {
@@ -82,7 +82,6 @@ public class VoteHandler extends TextWebSocketHandler {
                 notifyVoter(votingSession.getVoting().getId(), jwtAuth.id(), eventSerializer.serialize(new JoinedEvent(votingReadService.getVoteAbilitiesByVotingAndUser(votingSession.getVoting().getId(), jwtAuth.id()).stream().map(VoteAbility::getQuestion).toList())));
             }
         }
-
     }
 
     private void handleVote(Object body, WebSocketSession session) throws NotFoundException, BadRequestException {

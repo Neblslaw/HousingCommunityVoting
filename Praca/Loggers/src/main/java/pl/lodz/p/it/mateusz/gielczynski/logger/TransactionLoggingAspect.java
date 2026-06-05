@@ -17,7 +17,7 @@ import java.util.UUID;
 public class TransactionLoggingAspect {
 
 
-    @Before(" @annotation(transactional)")
+    @Before("@annotation(transactional) within(@annotation(transactional))")
     public void logTransactionStart(JoinPoint joinPoint, Transactional transactional) {
         LoggingAspect.startTransaction();
         String id = UUID.randomUUID().toString().substring(0, 8);

@@ -43,7 +43,6 @@ public class JwtSecurityConfig {
     CorsConfiguration corsConfigurationSource() {
         var corsConfig = new CorsConfiguration();
         corsConfig.setAllowedOrigins(List.of("*"));
-//        corsConfig.setAllowCredentials(true);
         corsConfig.setAllowedMethods(List.of("GET", "PATCH", "POST", "PUT", "DELETE"));
         corsConfig.addAllowedHeader("*");
         corsConfig.addExposedHeader(HttpHeaders.ETAG);

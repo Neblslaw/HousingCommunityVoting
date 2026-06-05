@@ -38,6 +38,7 @@ public class AuthController {
     private int jwtRefreshExpirationInSeconds;
 
     @PostMapping("/login")
+    @Sensitive
     public String login(@RequestBody @Sensitive @Valid LoginDto loginDto, HttpServletResponse response) throws BadRequestException {
         Token token = accountService.login(loginDto.login(), loginDto.password());
 

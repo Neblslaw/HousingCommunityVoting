@@ -1,0 +1,70 @@
+classDiagram
+    class AbstractEntity {
+        <<abstract>>
+        +UUID id
+        +Long version
+        +LocalDateTime createdAt
+        +LocalDateTime modifiedAt
+    }
+
+    class Question {
+        +String question
+        +List~String~ answers
+    }
+
+    class Voting {
+        +String name
+        +List~Question~ questions
+        +UUID owner
+        +LocalDateTime startTime
+        +LocalDateTime endTime
+        +LocalDateTime lockTime
+        +List~VotingGroup~ votingGroups
+    }
+
+    class VotingGroup {
+        +String name
+        +List~UUID~ voters
+    }
+
+    class Vote {
+        +Voting voting
+        +Question question
+        +VotingGroup group
+        +String answer
+    }
+
+    class VoteAbility {
+        +Voting voting
+        +UUID user
+        +UUID question
+    }
+
+    class VotingResult {
+        +UUID id
+        +List~VotingResultOption~ results
+        +Float voteCount
+        +Question question
+        +Voting voting
+    }
+
+    class VotingResultOption {
+        +UUID id
+        +String option
+        +Float count
+    }
+
+    AbstractEntity <|-- Question
+    AbstractEntity <|-- Voting
+    AbstractEntity <|-- VotingGroup
+    AbstractEntity <|-- Vote
+    AbstractEntity <|-- VoteAbility
+    Voting --> Question
+    Voting --> VotingGroup
+    Vote --> Voting
+    Vote --> Question
+    Vote --> VotingGroup
+    VoteAbility --> Voting
+    VotingResult --> VotingResultOption
+    VotingResult --> Question
+    VotingResult --> Voting

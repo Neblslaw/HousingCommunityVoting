@@ -117,12 +117,20 @@ public class LoggingAspect {
         appendLog(Instant.now().toString());
         appendLog("User: " + user);
         appendLog("Endpoint: " + request.getMethod() + " " + request.getRequestURI());
-        appendLog(joinPoint.getSignature().toShortString() + " Arguments: " + Arrays.toString(joinPoint.getArgs()));
+
+        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        Object[] maskedArgs = maskSensitiveArguments(method, joinPoint.getArgs());
+        appendLog(joinPoint.getSignature().toShortString() + " Arguments: " + Arrays.toString(maskedArgs));
     }
 
     @AfterReturning(pointcut = "within(@org.springframework.web.bind.annotation.RestController *)", returning = "result")
     public void logControllerEnd(JoinPoint joinPoint, Object result) {
-        logBuilder.get().append(indent()).append("Response: ").append(result).append("\n");
+        Method method = ((MethodSignature) joinPoint.getSignature()).getMethod();
+        if (isSensitive(method, result)) {
+            appendLog("Response: ******-***");
+        } else {
+            appendLog("Response: " + result);
+        }
         endTransaction();
     }
 
@@ -135,23 +143,21 @@ public class LoggingAspect {
     @Around("execution(@pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged * *(..)) || within(@pl.lodz.p.it.mateusz.gielczynski.logger.MethodCallLogged *)")
     public Object logServiceAndRepository(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().toShortString();
-        Object[] args = joinPoint.getArgs();
 
         callDepth.set(callDepth.get() + 1);
 
         MethodSignature signature = (MethodSignature) joinPoint.getSignature();
         Method method = signature.getMethod();
-        Parameter[] parameters = method.getParameters();
-        for (int i = 0; i < args.length; i++) {
-            if (parameters[i].isAnnotationPresent(Sensitive.class)) {
-                args[i] = "*****-***";
-            }
+        Object[] maskedArgs = maskSensitiveArguments(method, joinPoint.getArgs());
 
-        }
-        appendLog("Method: " + methodName + " Arguments: " + Arrays.toString(args));
+        appendLog("Method: " + methodName + " Arguments: " + Arrays.toString(maskedArgs));
         try {
             Object result = joinPoint.proceed();
-            appendLog("Returned: " + result);
+            if (isSensitive(method, result)) {
+                appendLog("Returned: ******-***");
+            } else {
+                appendLog("Returned: " + result);
+            }
             decreaseCallDepth();
             return result;
         } catch (Exception e) {
@@ -168,5 +174,29 @@ public class LoggingAspect {
         if (callDepth.get() > 0) {
             callDepth.set(callDepth.get() - 1);
         }
+    }
+
+    private Object[] maskSensitiveArguments(Method method, Object[] args) {
+        if (args == null || args.length == 0) {
+            return args;
+        }
+
+        Object[] maskedArgs = Arrays.copyOf(args, args.length);
+        Parameter[] parameters = method.getParameters();
+        int bound = Math.min(maskedArgs.length, parameters.length);
+
+        for (int i = 0; i < bound; i++) {
+            if (parameters[i].isAnnotationPresent(Sensitive.class)
+                    || (maskedArgs[i] != null && maskedArgs[i].getClass().isAnnotationPresent(Sensitive.class))) {
+                maskedArgs[i] = "******-***";
+            }
+        }
+
+        return maskedArgs;
+    }
+
+    private boolean isSensitive(Method method, Object value) {
+        return method.isAnnotationPresent(Sensitive.class)
+                || (value != null && value.getClass().isAnnotationPresent(Sensitive.class));
     }
 }

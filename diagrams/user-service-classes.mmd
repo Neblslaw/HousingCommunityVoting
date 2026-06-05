@@ -1,0 +1,44 @@
+classDiagram
+    class AbstractEntity {
+        <<abstract>>
+        +UUID id
+        +Long version
+        +LocalDateTime createdAt
+        +LocalDateTime modifiedAt
+    }
+
+    class Account {
+        +String login
+        +String passwordHash
+        +String firstName
+        +String lastName
+        +String email
+        +String language
+        +boolean archived
+        +boolean verified
+        +Set~Group~ groups
+    }
+
+    class Role {
+        +String name
+        +int groupsCount
+    }
+
+    class Group {
+        +String name
+        +Set~Role~ roles
+        +int userCount
+    }
+
+    class InviteCode {
+        +UUID id
+        +LocalDateTime expiresAt
+    }
+
+    AbstractEntity <|-- Account
+    AbstractEntity <|-- Role
+    AbstractEntity <|-- Group
+
+    Account --> Group
+    Group --> Role
+

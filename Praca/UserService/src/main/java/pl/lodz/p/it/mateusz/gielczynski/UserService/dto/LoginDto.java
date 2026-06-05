@@ -1,7 +1,9 @@
 package pl.lodz.p.it.mateusz.gielczynski.UserService.dto;
 
-public record LoginDto (
+import pl.lodz.p.it.mateusz.gielczynski.logger.Sensitive;
+
+public record LoginDto(
         String login,
-        String password
-){
+        @Sensitive String password
+) {
 }

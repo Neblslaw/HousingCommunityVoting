@@ -1,53 +1,74 @@
 version: '3.9'
 
 services:
+  # --- INFRASTRUCTURE ---
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - voting-front
+
   postgres:
     image: postgres:18-alpine
     ports:
       - "5432:5432"
-
     environment:
       - POSTGRES_DB=appdb
       - POSTGRES_PASSWORD=1qaz2wsx
       - POSTGRES_USER=root
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
 
+  # --- BACKEND MICROSERVICES ---
   voting-service:
     image: voting-service
-    ports:
-      - "9090:9090"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1qaz2wsx
+    depends_on:
+      - postgres
+
   estate-service:
     image: estate-service
-    ports:
-      - "9191:9191"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1qaz2wsx
+    depends_on:
+      - postgres
+
   notification-service:
     image: notification-service
-    ports:
-      - "9292:9292"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1qaz2wsx
+    depends_on:
+      - postgres
+
   user-service:
     image: user-service
-    ports:
-      - "8080:8080"
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/appdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: 1qaz2wsx
+    depends_on:
+      - postgres
 
+  # --- FRONTEND ---
   voting-front:
     image: voting-front
-    ports:
-      - "5173:5173"
-    environment:
-      API_TARGET: 'http://user-service:8080'
-      VOTING_TARGET: 'http://voting-service:9090'
-      ESTATE_TARGET: 'http://estate-service:9191'
-      NOTIFICATION_TARGET: 'http://notification-service:9292'
-      VOTES_TARGET: 'ws://voting-service:9090'
 
 volumes:
   db_data:
+  caddy_data:
+  caddy_config:
