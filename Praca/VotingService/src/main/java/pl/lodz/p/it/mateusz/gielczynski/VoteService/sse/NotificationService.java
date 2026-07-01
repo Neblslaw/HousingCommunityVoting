@@ -2,6 +2,7 @@ package pl.lodz.p.it.mateusz.gielczynski.VoteService.sse;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
@@ -35,6 +36,7 @@ public class NotificationService {
         return emitter;
     }
 
+    @Async
     public void notify(UUID userId, String message) {
         List<SseEmitter> userEmitters = emitters.get(userId);
         if (userEmitters != null) {

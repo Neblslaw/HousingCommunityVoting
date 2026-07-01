@@ -32,7 +32,7 @@ public class NotificationService {
         Notification notification = new Notification();
         notification.setText(dto.text());
         notificationRepository.saveAndFlush(notification);
-        notificationSSEService.notifyAll(notification.getText());
+        Thread.ofVirtual().start(() -> notificationSSEService.notifyAll(notification.getText()));
     }
 
     public void archive(UUID id) throws NotFoundException {
