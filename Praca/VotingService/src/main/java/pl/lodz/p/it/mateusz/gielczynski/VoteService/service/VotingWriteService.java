@@ -41,7 +41,7 @@ public class VotingWriteService {
 
 
     public Voting createVoting(Voting voting) {
-        return votingRepository.saveAndFlush(voting); //todo exceptions
+        return votingRepository.saveAndFlush(voting);
     }
 
     @Retryable(
@@ -128,9 +128,9 @@ public class VotingWriteService {
                     voteRepository.saveAndFlush(vote);
                 }
         );
-        voteAbilityRepository.deleteByUserAndQuestion(voteDTO.userId(), voteDTO.questionId());
-        question.setModifiedAt(LocalDateTime.now());
-        questionRepository.saveAndFlush(question);
+        if (voteAbilityRepository.deleteByUserAndQuestion(voteDTO.userId(), voteDTO.questionId()) == null) {
+            throw new NotFoundException(i18n.VOTE_ABILITY_NOT_FOUND);
+        }
     }
 
     @Retryable(
