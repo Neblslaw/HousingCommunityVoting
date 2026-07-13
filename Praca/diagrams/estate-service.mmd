@@ -1,0 +1,31 @@
+classDiagram
+    class AbstractEntity {
+        <<abstract>>
+        - UUID id
+        - Long version
+        - LocalDateTime createdAt
+        - LocalDateTime modifiedAt
+    }
+
+    class Building {
+        ~ String name
+        ~ List~Floor~ floors
+    }
+
+    class Floor {
+        ~ List~Flat~ flats
+        ~ int number
+    }
+
+    class Flat {
+        ~ String number
+        ~ int order
+        ~ List~UUID~ inhabitants
+    }
+
+    AbstractEntity <|-- Building
+    AbstractEntity <|-- Floor
+    AbstractEntity <|-- Flat
+
+    Building "1" --> "*" Floor : @OneToMany
+    Floor "1" --> "*" Flat : @OneToMany

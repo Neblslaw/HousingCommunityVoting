@@ -8,7 +8,7 @@ import pl.lodz.p.it.mateusz.gielczynski.VoteService.model.db.VoteAbility;
 import java.util.List;
 import java.util.UUID;
 
-@Transactional(propagation = Propagation.MANDATORY, readOnly = false)
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
 public interface VoteAbilityRepository extends Repository<VoteAbility, UUID> {
     VoteAbility deleteByUserAndQuestion(UUID user, UUID question);
 

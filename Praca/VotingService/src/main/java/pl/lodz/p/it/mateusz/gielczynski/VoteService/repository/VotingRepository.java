@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-@Transactional(propagation = Propagation.MANDATORY, readOnly = false)
+@Transactional(propagation = Propagation.REQUIRES_NEW, readOnly = false)
 public interface VotingRepository extends Repository<Voting, UUID> {
     Voting saveAndFlush(Voting voting);
 

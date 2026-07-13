@@ -1,0 +1,74 @@
+classDiagram
+    class AbstractEntity {
+        <<abstract>>
+        - UUID id
+        - Long version
+        - LocalDateTime createdAt
+        - LocalDateTime modifiedAt
+    }
+
+    class Vote {
+        ~ Voting voting
+        ~ Question question
+        ~ VotingGroup group
+        ~ String answer
+    }
+
+    class VoteAbility {
+        ~ Voting voting
+        ~ UUID user
+        ~ UUID question
+    }
+
+    class Voting {
+        - String name
+        - List~Question~ questions
+        - UUID owner
+        - LocalDateTime startTime
+        - LocalDateTime endTime
+        - LocalDateTime lockTime
+        - List~VotingGroup~ votingGroups
+    }
+
+    class VotingGroup {
+        - String name
+        - List~UUID~ voters
+    }
+
+    class VotingResult {
+        ~ UUID id
+        ~ List~VotingResultOption~ results
+        ~ Float voteCount
+        ~ Question question
+        ~ Voting voting
+    }
+
+    class VotingResultOption {
+        ~ UUID id
+        ~ String option
+        ~ Float count
+    }
+
+    class Question {
+        - String question
+        - List~String~ answers
+    }
+
+    AbstractEntity <|-- Vote
+    AbstractEntity <|-- VoteAbility
+    AbstractEntity <|-- Voting
+    AbstractEntity <|-- VotingGroup
+    AbstractEntity <|-- Question
+
+    Voting "1" --> "*" Question : @OneToMany
+    Voting "1" --> "*" VotingGroup : @OneToMany
+    Voting "1" --> "*" VotingResult : @ManyToOne
+
+    Vote "*" --> "1" Voting : @ManyToOne
+    Vote "*" --> "1" Question : @ManyToOne
+    Vote "*" --> "1" VotingGroup : @ManyToOne
+
+    VoteAbility "*" --> "1" Voting : @ManyToOne
+
+    VotingResult "1" --> "1" Question : @OneToOne
+    VotingResult "1" --> "*" VotingResultOption : @OneToMany

@@ -1,0 +1,15 @@
+classDiagram
+    class Notification {
+        ~ UUID id
+        ~ String text
+        ~ LocalDateTime creationDate
+        ~ NOTIFICATION_STATE state
+    }
+
+    class NOTIFICATION_STATE {
+        <<enumeration>>
+        CREATED
+        ARCHIVED
+    }
+
+    Notification --> NOTIFICATION_STATE
