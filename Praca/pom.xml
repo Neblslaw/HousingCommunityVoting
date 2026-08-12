@@ -10,7 +10,7 @@
     </parent>
     <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
     <artifactId>Praca</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>pom</packaging>
     <url/>
     <licenses>
@@ -44,25 +44,25 @@
             <dependency>
                 <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
                 <artifactId>Exceptions</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
                 <artifactId>Loggers</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
                 <artifactId>VotingEngine</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <scope>compile</scope>
             </dependency>
             <dependency>
                 <groupId>pl.lodz.p.it.mateusz.gielczynski</groupId>
                 <artifactId>SecurityClient</artifactId>
-                <version>0.0.1-SNAPSHOT</version>
+                <version>1.0.0</version>
                 <scope>compile</scope>
             </dependency>
         </dependencies>
@@ -100,14 +100,21 @@
                         <configuration>
                             <linkXRef>false</linkXRef>
                             <reportsDirectories>
-                                <reportsDirectory>${project.basedir}/Exceptions/target/surefire-reports</reportsDirectory>
+                                <reportsDirectory>${project.basedir}/Exceptions/target/surefire-reports
+                                </reportsDirectory>
                                 <reportsDirectory>${project.basedir}/Loggers/target/surefire-reports</reportsDirectory>
-                                <reportsDirectory>${project.basedir}/VotingEngine/target/surefire-reports</reportsDirectory>
-                                <reportsDirectory>${project.basedir}/SecurityClient/target/surefire-reports</reportsDirectory>
-                                <reportsDirectory>${project.basedir}/UserService/target/surefire-reports</reportsDirectory>
-                                <reportsDirectory>${project.basedir}/VotingService/target/surefire-reports</reportsDirectory>
-                                <reportsDirectory>${project.basedir}/EstateService/target/surefire-reports</reportsDirectory>
-                                <reportsDirectory>${project.basedir}/NotificationService/target/surefire-reports</reportsDirectory>
+                                <reportsDirectory>${project.basedir}/VotingEngine/target/surefire-reports
+                                </reportsDirectory>
+                                <reportsDirectory>${project.basedir}/SecurityClient/target/surefire-reports
+                                </reportsDirectory>
+                                <reportsDirectory>${project.basedir}/UserService/target/surefire-reports
+                                </reportsDirectory>
+                                <reportsDirectory>${project.basedir}/VotingService/target/surefire-reports
+                                </reportsDirectory>
+                                <reportsDirectory>${project.basedir}/EstateService/target/surefire-reports
+                                </reportsDirectory>
+                                <reportsDirectory>${project.basedir}/NotificationService/target/surefire-reports
+                                </reportsDirectory>
                             </reportsDirectories>
                         </configuration>
                     </execution>
