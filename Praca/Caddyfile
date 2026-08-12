@@ -1,20 +1,16 @@
 localhost {
-    # 1. User API (Replaces Vite's '/api' proxy)
     handle_path /api/* {
         reverse_proxy user-service:8080
     }
 
-    # 2. Voting API (Replaces Vite's '/voting-api' proxy)
     handle_path /voting-api/* {
         reverse_proxy voting-service:9090
     }
 
-    # 3. Estate API (Replaces Vite's '/estate-api' proxy)
     handle_path /estate-api/* {
         reverse_proxy estate-service:9191
     }
 
-    # 4. Notification API (SSE FIX)
     handle_path /notification-api/* {
         reverse_proxy notification-service:9292 {
             # Disables buffering so SSE streams instantly to the browser
@@ -24,22 +20,12 @@ localhost {
 
     # 5. WebSockets
     handle /votes* {
-        # 1. Check if the URL has the token
         @hasToken query token=*
-
-        # 2. Inject the Authorization header just like Vite
         request_header @hasToken Authorization "Bearer {query.token}"
-
-        # 3. Delete the token from the URL!
-        # {path} contains only the base route (e.g., /votes/uuid).
-        # By rewriting to {path}, we strip the "?token=..." entirely.
         rewrite * {path}
-
-        # 4. Proxy to Spring Boot
         reverse_proxy voting-service:9090
     }
 
-    # 6. Frontend
     handle {
         reverse_proxy voting-front:5173
     }
